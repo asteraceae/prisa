@@ -1,0 +1,27 @@
+[project]
+name = "prisa"
+version = "0.1.0"
+description = "PRISA: day-by-day public transport fares for Barcelona from Telefónica mobility data"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "duckdb>=1.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "jupyterlab>=4.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prisa"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

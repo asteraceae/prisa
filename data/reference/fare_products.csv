@@ -1,0 +1,7 @@
+product_id,name,kind,trips_included,validity_days,price_eur,valid_from,requires_id,daily_priced,is_reference,source
+single,Bitllet senzill,single,1,,2.90,2026-01-15,false,true,false,https://www.tmb.cat/ca/tarifes-metro-bus-barcelona
+t_casual,T-casual,multi_trip,10,,13.00,2026-01-15,false,true,false,https://www.tmb.cat/ca/tarifes-metro-bus-barcelona
+t_usual,T-usual,pass,,30,22.80,2026-01-15,true,false,true,https://www.tmb.cat/ca/tarifes-metro-bus-barcelona (price after the 50% Generalitat + State discount kept for 2026)
+t_jove,T-jove,pass,,90,45.50,2026-01-15,true,false,false,https://www.tmb.cat/ca/tarifes-metro-bus-barcelona (all zones; under 30)
+t_dia,T-dia,pass,,1,12.00,2026-01-15,false,true,false,"https://www.tmb.cat/ca/tarifes-metro-bus-barcelona (published as ""from 12 EUR"")"
+airport,Bitllet aeroport,single,1,,5.90,2026-01-15,false,true,false,https://www.tmb.cat/ca/tarifes-metro-bus-barcelona

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Telefónica data is provided under challenge terms: never commit it.
+data/raw/*
+data/interim/*
+data/processed/*
+!data/*/.gitkeep
+
+# Reference CSVs we write by hand (data/reference/) are committed.
+# Large downloaded reference files go in data/raw/ instead.

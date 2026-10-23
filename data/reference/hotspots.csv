@@ -1,0 +1,31 @@
+hotspot_id,name,type,barri_number,annual_visitors,visitors_year,source
+sagrada_familia,Sagrada Família,monument,6,4961306,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+park_guell,Park Güell,park,30,4620922,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+teleferic_montjuic,Telefèric de Montjuïc,viewpoint,11,2105768,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+casa_batllo,Casa Batlló,monument,7,1908052,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+aquarium,Aquàrium de Barcelona,venue,2,1552742,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+poble_espanyol,Poble Espanyol,venue,11,1496225,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+cosmocaixa,CosmoCaixa,museum,25,1181600,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+museu_picasso,Museu Picasso,museum,4,1128140,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+la_pedrera,La Pedrera,monument,7,1126112,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+born_cc,El Born Centre de Cultura,museum,4,970885,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+bus_turistic,Barcelona Bus Turístic,transport_hub,,958732,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+zoo,Zoo de Barcelona,park,4,841142,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+mnac,MNAC,museum,11,826199,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+muhba,MUHBA,museum,2,812756,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024 (several sites)
+camp_nou,Museu FC Barcelona / Spotify Camp Nou,stadium,20,783987,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024 (stadium works year)
+funicular_tibidabo,Funicular del Tibidabo,viewpoint,22,763235,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+castell_montjuic,Castell de Montjuïc,monument,11,714981,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+tibidabo_park,Parc d'Atraccions Tibidabo,park,22,648999,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+sant_pau,Recinte Modernista de Sant Pau,monument,35,373109,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+fundacio_miro,Fundació Joan Miró,museum,11,361282,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+palau_musica,Palau de la Música Catalana,venue,4,353856,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+casa_vicens,Casa Vicens,monument,31,262200,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024
+cruise_terminals,Cruise terminals (Moll Adossat),transport_hub,12,3655981,2024,Observatori del Turisme a Barcelona - Informe de l'activitat turística 2024 (passengers; 791 calls; 44% in transit)
+la_rambla,La Rambla,street,1,,,no official count
+boqueria,Mercat de la Boqueria,market,1,,,no official count
+catedral,Catedral de Barcelona,monument,2,,,no official count
+barceloneta_beach,Platja de la Barceloneta,beach,3,,,no official count
+bunkers_carmel,Bunkers del Carmel,viewpoint,34,,,no official count; barri from polygon test
+font_magica,Font Màgica de Montjuïc,venue,11,,,no official count
+parc_forum,Parc del Fòrum (Primavera Sound),venue,70,,,event venue; barri from polygon test

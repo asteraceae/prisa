@@ -1,0 +1,10 @@
+vehicle_type,mode,capacity_seated,capacity_total,source
+metro_tmb_avg,metro,,1030,"TMB institutional presentation 2025 (2024 data): 206 places per car x 5 cars, derived from places-km / car-km"
+metro_9000,metro,112,845,"Secondary (Wikipedia ES, autobusesbcn.es); other sources give 960-1362 at higher standing density"
+bus_tmb_avg,bus,,86,"TMB institutional presentation 2025 (2024 data), derived from places-km / bus-km"
+bus_18m,bus,34,125,"TMB 2018 dossier / Irizar spec; range 120-143 across models"
+bus_mini,bus,,26,"INDCAR 5.94 m neighbourhood bus (Corresponsables)"
+tram_citadis_302,tram,64,218,"Alstom 2002 press release (secondary)"
+fgc_bv_unit,fgc,,500,"FGC presentation 2024/2025; 397-528 by series, series mapping inferred"
+rodalies_civia_463,rodalies,,607,"Trenvista / Railvolution (secondary); Civia 447 = 549, 465 = 748-997"
+cable_car_montjuic,cable_car,,8,"TMB presentation 2025"
