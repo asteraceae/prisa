@@ -121,6 +121,14 @@ classDiagram
     +int departures
     +int? departures_peak_hour
   }
+  class ModeShare {
+    <<dimension>>
+    #Segment segment
+    #string mode
+    +float64 share
+    +boolean assumption
+    +string source
+  }
   Zones "1" --> "*" Stations : located in
   Lines "1" --> "*" LineStops : ordered stops
   Stations "1" --> "*" LineStops
@@ -616,6 +624,20 @@ Expanded from GTFS calendars: how many vehicles actually pass each stop each day
 | `departures_peak_hour` | Int64, nullable | departures in that stop's busiest hour |
 
 Sources: GTFS feeds
+
+### `mode_share` (dimension)
+
+Default mode split per segment. EMEF counts walks of 5 minutes or less, which barri-to-barri phone trips mostly miss, so walking is likely overstated for our data. No weekend survey exists.
+
+| column | type | notes |
+|---|---|---|
+| `segment` (key) | Segment |  |
+| `mode` (key) | string | a TransportMode, or walk / bike / car_moto / taxi_vtc / other |
+| `share` | float64 | fraction of the segment's weekday trips; sums to 1 per segment |
+| `assumption` | boolean | true where the cell is our assumption, not a published figure |
+| `source` | string |  |
+
+Sources: EMEF 2024, Ajuntament PMU 2030, OTB perfil turistes 2024
 
 ### `calendar_days` (dimension)
 

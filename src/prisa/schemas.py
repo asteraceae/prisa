@@ -225,6 +225,23 @@ SERVICE_DAILY = Table(
 # Dimensions: calendar and exogenous context
 # --------------------------------------------------------------------------
 
+MODE_SHARE = Table(
+    "mode_share",
+    "dimension",
+    ("segment", "mode"),
+    (
+        C("segment", STR, enum=Segment),
+        C("mode", STR, "a TransportMode, or walk / bike / car_moto / taxi_vtc / other"),
+        C("share", FLOAT, "fraction of the segment's weekday trips; sums to 1 per segment"),
+        C("assumption", BOOL, "true where the cell is our assumption, not a published figure"),
+        C("source", STR),
+    ),
+    "Default mode split per segment. EMEF counts walks of 5 minutes or less, which "
+    "barri-to-barri phone trips mostly miss, so walking is likely overstated for our data. "
+    "No weekend survey exists.",
+    sources=("EMEF 2024", "Ajuntament PMU 2030", "OTB perfil turistes 2024"),
+)
+
 CALENDAR_DAYS = Table(
     "calendar_days",
     "dimension",
@@ -597,7 +614,7 @@ TABLES: dict[str, Table] = {
     t.name: t
     for t in (
         ZONES, DISTRICTS, ZONE_POPULATION, ZONE_ACCOMMODATION, HOTSPOTS,
-        STATIONS, LINES, LINE_STOPS, VEHICLE_TYPES, SERVICE_DAILY,
+        STATIONS, LINES, LINE_STOPS, VEHICLE_TYPES, SERVICE_DAILY, MODE_SHARE,
         CALENDAR_DAYS, EVENTS, WEATHER_DAILY,
         TRIP_FLOWS, PRESENCE_DAILY, PRESENCE_MONTHLY, OVERNIGHT_STAYS, VISITOR_ORIGIN,
         RIDERSHIP, OCCUPANCY_OBSERVATIONS, EXTERNAL_FLOWS, ZONE_CROSSWALK,

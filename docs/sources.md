@@ -112,3 +112,18 @@ Known 2027 events: MWC 1–4 Mar (Fira Gran Via, L'Hospitalet), Primavera Sound
 - Spotify Camp Nou capacity going up in phases after it reopened in Nov 2025.
 - Gaudí centenary and the Sagrada Família towers (2026) inflate the baseline.
 - Timed-ticket caps at Sagrada Família and Park Güell limit how far those sites can grow.
+
+## Mode share (`data/reference/mode_share.csv`)
+
+None of these documents states a licence; cite them as official statistics.
+
+| Source | What it gives | URL |
+|---|---|---|
+| EMEF 2024 Resum Executiu (ATM / Institut Metròpoli, Apr 2025) | Residents 16+, weekday trips: Barcelona-internal (60.1% active / 27.9% public transport incl. taxi / 12.0% private) and Barcelona↔rest of the metro area (5.2 / 52.9 / 41.9), with splits inside each group | https://recam.amb.cat/bitstreams/e2fe04ae-2308-4d10-8137-bd0dbcef19e7/download |
+| AMB Informe de la mobilitat 2024 (Jul 2025) | 2024 ridership in millions: metro 468.7, FGC 97.5, Rodalies 117.7, tram 34.9, TMB bus 219.1 | https://recam.amb.cat/bitstreams/87b8cd37-2917-425b-a576-cef77b3fd385/download |
+| PMU 2030 participation slides (Ajuntament, May 2024), slide 20 | Tourist trips: walk 51.0, metro 29.7, TMB bus ~4.2, rail ~1.4, other public 8.4, private 2.0 | https://www.barcelona.cat/mobilitat/sites/default/files/2024-05/240509_Sessi%C3%B3%206_Mobilitat%20i%20Sostenibilitat_Part%201.pdf |
+| Perfil i hàbits dels turistes a Barcelona 2024 (OTB, Apr 2025) | Main mode of tourists: walk 44.7, metro 28.1, taxi 13.4, bus 5.6, Uber/Cabify 2.3 | https://ajuntament.barcelona.cat/turisme/sites/default/files/2025-04/Informe%20enquesta%20perfil%20turistes%20Barcelona%20ciutat%202024.pdf |
+| Estratègia de mobilitat turística, Mesura de Govern (Nov 2017) | 2016 tourist trips by mode; tourists ≈15% of metro users (196k trips/day); ticket mix of tourists' trips | https://ajuntament.barcelona.cat/turisme/sites/default/files/mesura_de_govern_mobilitat.pdf |
+
+Gaps: no weekend survey exists (EMEF is weekdays only); no mode-by-distance
+table; the Nacional column is entirely our assumption.

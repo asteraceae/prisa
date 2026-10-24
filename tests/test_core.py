@@ -4,7 +4,7 @@ import pytest
 from prisa import collect, fares, geo, pressure, reference, schemas
 from prisa.enums import Segment, SourceFile, TransportMode
 from prisa.ingest import telefonica
-from prisa.saturation import Assumptions, capacity_at, saturation, stop_shares
+from prisa.saturation import Assumptions, capacity_at, mode_share_from_table, saturation, stop_shares
 
 
 def raw_rows(source, rows):
@@ -156,3 +156,12 @@ def test_parse_fgc_snapshot(tmp_path):
     assert row["occupancy_pct"] == 55.0
     assert row["station_id"] == "fgc:PF"
     assert row["observed_at"].hour == 15
+
+
+def test_mode_share_table():
+    t = reference.load(schemas.MODE_SHARE)
+    assert t.groupby("segment")["share"].sum().round(2).eq(1.0).all()
+    shares = mode_share_from_table(t)
+    assert set(shares) == set(Segment)
+    assert shares[Segment.INTERNATIONAL][TransportMode.METRO] == pytest.approx(0.30)
+    assert "walk" not in {m.value for m in shares[Segment.RESIDENT]}

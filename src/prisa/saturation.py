@@ -58,6 +58,19 @@ class Assumptions:
     assumed_basis_ppm2: float = 4.0
 
 
+def mode_share_from_table(table: pd.DataFrame) -> dict[Segment, dict[TransportMode, float]]:
+    """Turn the `mode_share` reference table into `Assumptions.mode_share`.
+
+    Only public transport modes are kept: walking, bikes, cars and taxis don't
+    load the vehicles we measure, so they just reduce the riders.
+    """
+    pt = {m.value for m in TransportMode}
+    out: dict[Segment, dict[TransportMode, float]] = {}
+    for r in table[table["mode"].isin(pt)].itertuples():
+        out.setdefault(Segment(r.segment), {})[TransportMode(r.mode)] = float(r.share)
+    return out
+
+
 def capacity_at(vehicle_types: pd.DataFrame, density: float, assumed_basis_ppm2: float = 4.0) -> pd.DataFrame:
     """Capacity of each vehicle type at `density` people/m2 standing.
 

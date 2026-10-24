@@ -9,7 +9,9 @@ from prisa import schemas as s
 
 GROUPS = {
     "Geography and hotspots": [s.ZONES, s.DISTRICTS, s.ZONE_POPULATION, s.ZONE_ACCOMMODATION, s.HOTSPOTS],
-    "Transport network (supply)": [s.ZONES, s.STATIONS, s.LINES, s.LINE_STOPS, s.VEHICLE_TYPES, s.SERVICE_DAILY],
+    "Transport network (supply)": [
+        s.ZONES, s.STATIONS, s.LINES, s.LINE_STOPS, s.VEHICLE_TYPES, s.SERVICE_DAILY, s.MODE_SHARE,
+    ],
     "Calendar and context": [s.CALENDAR_DAYS, s.EVENTS, s.WEATHER_DAILY, s.ZONES],
     "Observed demand": [
         s.ZONES, s.CALENDAR_DAYS, s.TRIP_FLOWS, s.PRESENCE_DAILY, s.PRESENCE_MONTHLY,
@@ -51,6 +53,7 @@ RELATIONS = [
     ("trip_flows", "*", "pressure_components", "*", "inbound, anomaly"),
     ("presence_daily", "*", "pressure_components", "*", "visitor density"),
     ("trip_flows", "*", "saturation", "*", "demand"),
+    ("mode_share", "*", "saturation", "*", "splits demand"),
     ("ridership", "*", "saturation", "*", "calibrates"),
     ("occupancy_observations", "*", "saturation", "*", "validates"),
     ("service_daily", "*", "saturation", "*", "capacity"),
