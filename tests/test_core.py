@@ -1,10 +1,10 @@
 import pandas as pd
 import pytest
 
-from prisa import fares, geo, pressure, reference, schemas
+from prisa import collect, fares, geo, pressure, reference, schemas
 from prisa.enums import Segment, SourceFile, TransportMode
 from prisa.ingest import telefonica
-from prisa.saturation import Assumptions, saturation, stop_shares
+from prisa.saturation import Assumptions, capacity_at, saturation, stop_shares
 
 
 def raw_rows(source, rows):
@@ -129,3 +129,30 @@ def test_infer_barri_numbering():
     assert geo.infer_barri_numbering(pd.Series(["80190103", "80190205"])) == "city_wide"
     assert geo.infer_barri_numbering(pd.Series(["80190103", "80190201"])) == "per_district"
     assert geo.infer_barri_numbering(pd.Series(["80190103"])) == "unknown"
+
+
+def test_capacity_at_both_densities():
+    vt = reference.load(schemas.VEHICLE_TYPES)
+    four = capacity_at(vt, 4.0).set_index("vehicle_type")["capacity"]
+    six = capacity_at(vt, 6.0).set_index("vehicle_type")["capacity"]
+    # tram: 64 seated, 218 total at the assumed 4/m2 -> 38.5 m2 standing
+    assert four["tram_citadis_302"] == pytest.approx(218)
+    assert six["tram_citadis_302"] == pytest.approx(64 + 154 / 4 * 6)
+    assert (six >= four).all()
+
+
+def test_parse_fgc_snapshot(tmp_path):
+    import gzip
+    import json
+
+    snap = tmp_path / "fgc" / "2026-10-24" / "150657Z.json.gz"
+    snap.parent.mkdir(parents=True)
+    rec = {"lin": "S1", "ut": "u1", "estacionat_a": None,
+           "properes_parades": '{"parada": "PF"};{"parada": "SR"}',
+           "ocupacio_mi_percent": "50", "ocupacio_ri_percent": "60",
+           "ocupacio_m1_percent": "", "ocupacio_m2_percent": None}  # fmt: skip
+    snap.write_bytes(gzip.compress(json.dumps({"results": [rec]}).encode()))
+    (row,) = collect.parse_fgc(snap)
+    assert row["occupancy_pct"] == 55.0
+    assert row["station_id"] == "fgc:PF"
+    assert row["observed_at"].hour == 15

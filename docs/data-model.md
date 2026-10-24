@@ -108,6 +108,8 @@ classDiagram
     +TransportMode mode
     +int? capacity_seated
     +int capacity_total
+    +float64? capacity_basis_ppm2
+    +float64? standing_area_m2
     +string source
   }
   class ServiceDaily {
@@ -156,14 +158,6 @@ classDiagram
     +int? expected_attendance
     +string? source
   }
-  class CruiseCalls {
-    <<dimension>>
-    #date day
-    #string ship
-    +string? terminal
-    +int? passengers
-    +boolean? is_turnaround
-  }
   class WeatherDaily {
     <<dimension>>
     #date day
@@ -184,7 +178,6 @@ classDiagram
     +string? atm_fare_zone
   }
   CalendarDays "1" --> "*" Events : during
-  CalendarDays "1" --> "*" CruiseCalls
   CalendarDays "1" --> "1" WeatherDaily
   Zones "0..1" --> "*" Events : venue
 ```
@@ -377,6 +370,7 @@ classDiagram
     #string station_id
     #string line_id
     #int direction
+    #float64 standing_density
     +TransportMode mode
     +float64 demand_daily
     +float64 capacity_daily
@@ -596,12 +590,16 @@ Sources: GTFS feeds
 
 ### `vehicle_types` (dimension)
 
+Capacity at a chosen density = seated + standing area x people per m2 (see saturation.capacity_at). We run 4 (European planning standard) and 6 (crush).
+
 | column | type | notes |
 |---|---|---|
 | `vehicle_type` (key) | string | e.g. bus_12m, bus_18m, metro_l1, tram_citadis |
 | `mode` | TransportMode |  |
 | `capacity_seated` | Int64, nullable |  |
-| `capacity_total` | Int64 | seated + standing at the operator's nominal density |
+| `capacity_total` | Int64 | seated + standing as published |
+| `capacity_basis_ppm2` | float64, nullable | standing density behind capacity_total, if stated |
+| `standing_area_m2` | float64, nullable | floor area for standing; lets capacity be computed at any density |
 | `source` | string |  |
 
 ### `service_daily` (dimension)
@@ -646,18 +644,6 @@ Sources: GTFS feeds
 | `zone_id` | string, nullable | venue barri; null for city-wide events |
 | `expected_attendance` | Int64, nullable |  |
 | `source` | string, nullable |  |
-
-### `cruise_calls` (dimension)
-
-| column | type | notes |
-|---|---|---|
-| `day` (key) | datetime64[ns] |  |
-| `ship` (key) | string |  |
-| `terminal` | string, nullable |  |
-| `passengers` | Int64, nullable | capacity or reported passengers |
-| `is_turnaround` | boolean, nullable | embark/disembark port (more transit trips) vs transit call |
-
-Sources: Port de Barcelona
 
 ### `weather_daily` (dimension)
 
@@ -836,6 +822,7 @@ Load factor per stop and line: people passing / (vehicles x capacity).
 | `station_id` (key) | string |  |
 | `line_id` (key) | string |  |
 | `direction` (key) | Int64 |  |
+| `standing_density` (key) | float64 | people per m2 assumed for capacity: 4 or 6 |
 | `mode` | TransportMode |  |
 | `demand_daily` | float64 | estimated boardings |
 | `capacity_daily` | float64 | departures x vehicle capacity |
@@ -877,7 +864,7 @@ Load factor per stop and line: people passing / (vehicles x capacity).
 | `price_eur` | float64 | zone 1 price |
 | `valid_from` (key) | datetime64[ns] |  |
 | `requires_id` | boolean | personal title tied to DNI/NIE |
-| `daily_priced` | boolean | follows the daily discount; flat passes (T-usual, T-jove) do not |
+| `daily_priced` | boolean | each trip is charged at the discount of its boarding day; flat passes (T-usual, T-jove) are not |
 | `is_reference` | boolean | the fare residents must never pay more than |
 | `source` | string |  |
 

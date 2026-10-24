@@ -1,0 +1,10 @@
+[Unit]
+Description=PRISA: FGC train occupancy every 2 minutes
+
+[Timer]
+OnCalendar=*:0/2
+AccuracySec=10s
+Persistent=false
+
+[Install]
+WantedBy=timers.target

@@ -1,7 +1,12 @@
 """Daily fare calendar and the resident fairness check.
 
-Policy (team decision, 23 Oct 2026):
+Policy (team decisions, 23-24 Oct 2026):
   * one discount per day, applied to every product and every traveller;
+  * the discount is set by when you board, not when you bought the ticket:
+    a T-casual trip is charged at the price of the day (later, the hour) it
+    is validated, like a time-of-boarding fare, not a distance fare.
+    T-mobilitat validates every trip, so this is technically possible, and
+    it stops people stocking up on cheap days to ride on peak days;
   * the fare only ever goes down from the published price, never up;
   * residents must never pay more than the reference fare (T-usual).
 

@@ -196,9 +196,13 @@ VEHICLE_TYPES = Table(
         C("vehicle_type", STR, "e.g. bus_12m, bus_18m, metro_l1, tram_citadis"),
         C("mode", STR, enum=TransportMode),
         C("capacity_seated", INT, nullable=True),
-        C("capacity_total", INT, "seated + standing at the operator's nominal density"),
+        C("capacity_total", INT, "seated + standing as published"),
+        C("capacity_basis_ppm2", FLOAT, "standing density behind capacity_total, if stated", nullable=True),
+        C("standing_area_m2", FLOAT, "floor area for standing; lets capacity be computed at any density", nullable=True),
         C("source", STR),
     ),
+    "Capacity at a chosen density = seated + standing area x people per m2 "
+    "(see saturation.capacity_at). We run 4 (European planning standard) and 6 (crush).",
 )
 
 SERVICE_DAILY = Table(
@@ -253,20 +257,6 @@ EVENTS = Table(
         C("expected_attendance", INT, nullable=True),
         C("source", STR, nullable=True),
     ),
-)
-
-CRUISE_CALLS = Table(
-    "cruise_calls",
-    "dimension",
-    ("day", "ship"),
-    (
-        C("day", DATE),
-        C("ship", STR),
-        C("terminal", STR, nullable=True),
-        C("passengers", INT, "capacity or reported passengers", nullable=True),
-        C("is_turnaround", BOOL, "embark/disembark port (more transit trips) vs transit call", nullable=True),
-    ),
-    sources=("Port de Barcelona",),
 )
 
 WEATHER_DAILY = Table(
@@ -477,12 +467,13 @@ PRESSURE_INDEX = Table(
 SATURATION = Table(
     "saturation",
     "derived",
-    ("day", "station_id", "line_id", "direction"),
+    ("day", "station_id", "line_id", "direction", "standing_density"),
     (
         C("day", DATE),
         C("station_id", STR),
         C("line_id", STR),
         C("direction", INT),
+        C("standing_density", FLOAT, "people per m2 assumed for capacity: 4 or 6"),
         C("mode", STR, enum=TransportMode),
         C("demand_daily", FLOAT, "estimated boardings"),
         C("capacity_daily", FLOAT, "departures x vehicle capacity"),
@@ -538,7 +529,7 @@ FARE_PRODUCTS = Table(
         C("price_eur", FLOAT, "zone 1 price"),
         C("valid_from", DATE),
         C("requires_id", BOOL, "personal title tied to DNI/NIE"),
-        C("daily_priced", BOOL, "follows the daily discount; flat passes (T-usual, T-jove) do not"),
+        C("daily_priced", BOOL, "each trip is charged at the discount of its boarding day; flat passes (T-usual, T-jove) are not"),
         C("is_reference", BOOL, "the fare residents must never pay more than"),
         C("source", STR),
     ),
@@ -607,7 +598,7 @@ TABLES: dict[str, Table] = {
     for t in (
         ZONES, DISTRICTS, ZONE_POPULATION, ZONE_ACCOMMODATION, HOTSPOTS,
         STATIONS, LINES, LINE_STOPS, VEHICLE_TYPES, SERVICE_DAILY,
-        CALENDAR_DAYS, EVENTS, CRUISE_CALLS, WEATHER_DAILY,
+        CALENDAR_DAYS, EVENTS, WEATHER_DAILY,
         TRIP_FLOWS, PRESENCE_DAILY, PRESENCE_MONTHLY, OVERNIGHT_STAYS, VISITOR_ORIGIN,
         RIDERSHIP, OCCUPANCY_OBSERVATIONS, EXTERNAL_FLOWS, ZONE_CROSSWALK,
         PRESSURE_COMPONENTS, PRESSURE_INDEX, SATURATION, MODEL_RUNS, FORECASTS,

@@ -13,9 +13,14 @@ calibrated against operator ridership or varied in a sensitivity run.
       x legs_per_trip                              transfers board a 2nd vehicle
       x through_load                               people already on board
 
-    capacity_daily(stop, line) = departures x vehicle capacity_total
+    capacity_daily(stop, line) = departures x vehicle capacity at a standing density
 
     ratio_peak = ratio_daily x peak_demand_share / peak_service_share
+
+Standing density: there is no single standard. European planning for buses,
+trams and metros commonly uses 4 people/m2 for a full but acceptable vehicle,
+and treats 6 people/m2 as crush load. We run both and report both, so a day
+counts as saturated "at planning standard" or "even at crush load".
 """
 
 from __future__ import annotations
@@ -46,6 +51,32 @@ class Assumptions:
     # Share of a day's demand in its busiest hour. From hourly OD data where
     # available, else ridership profiles.
     peak_demand_share: float | None = None
+    # Standing densities (people/m2) to compute capacity at; one result set each.
+    standing_densities: tuple[float, ...] = (4.0, 6.0)
+    # Density assumed behind a published capacity when neither the standing
+    # area nor the operator's basis is known.
+    assumed_basis_ppm2: float = 4.0
+
+
+def capacity_at(vehicle_types: pd.DataFrame, density: float, assumed_basis_ppm2: float = 4.0) -> pd.DataFrame:
+    """Capacity of each vehicle type at `density` people/m2 standing.
+
+    Uses the standing area when known; otherwise backs it out of the published
+    capacity and its basis (or `assumed_basis_ppm2`), flagging those rows.
+    """
+    vt = vehicle_types.copy()
+    seated = vt["capacity_seated"].astype(float).fillna(0.0)
+    basis = vt["capacity_basis_ppm2"].astype(float).fillna(assumed_basis_ppm2)
+    derived_area = (vt["capacity_total"].astype(float) - seated) / basis
+    area = vt["standing_area_m2"].astype(float).fillna(derived_area)
+    vt["capacity"] = seated + area * density
+    vt["capacity_estimated"] = vt["standing_area_m2"].isna()
+    return vt[["vehicle_type", "mode", "capacity", "capacity_estimated"]]
+
+
+def line_capacity(lines: pd.DataFrame, vehicle_types: pd.DataFrame, density: float, a: Assumptions) -> pd.Series:
+    cap = capacity_at(vehicle_types, density, a.assumed_basis_ppm2).set_index("vehicle_type")["capacity"]
+    return lines.set_index("line_id")["vehicle_type"].map(cap)
 
 
 def zone_boardings(flows: pd.DataFrame, a: Assumptions) -> pd.DataFrame:
@@ -96,3 +127,19 @@ def saturation(flows: pd.DataFrame, shares: pd.DataFrame, a: Assumptions) -> pd.
         ["day", "station_id", "line_id", "direction", "mode",
          "demand_daily", "capacity_daily", "ratio_daily", "ratio_peak_hour"]
     ]  # fmt: skip
+
+
+def saturation_by_density(
+    flows: pd.DataFrame,
+    service: pd.DataFrame,
+    stations: pd.DataFrame,
+    lines: pd.DataFrame,
+    vehicle_types: pd.DataFrame,
+    a: Assumptions,
+) -> pd.DataFrame:
+    """`saturation` once per standing density in `a.standing_densities`, stacked."""
+    runs = []
+    for density in a.standing_densities:
+        shares = stop_shares(service, stations, line_capacity(lines, vehicle_types, density, a))
+        runs.append(saturation(flows, shares, a).assign(standing_density=density))
+    return pd.concat(runs, ignore_index=True)

@@ -1,0 +1,10 @@
+[Unit]
+Description=PRISA: archive one snapshot of the %i feed
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/prisa
+Environment=PYTHONPATH=%h/prisa/src
+ExecStart=/usr/bin/env python3 -m prisa.collect %i --out %h/prisa/data/raw/collect

@@ -10,7 +10,7 @@ from prisa import schemas as s
 GROUPS = {
     "Geography and hotspots": [s.ZONES, s.DISTRICTS, s.ZONE_POPULATION, s.ZONE_ACCOMMODATION, s.HOTSPOTS],
     "Transport network (supply)": [s.ZONES, s.STATIONS, s.LINES, s.LINE_STOPS, s.VEHICLE_TYPES, s.SERVICE_DAILY],
-    "Calendar and context": [s.CALENDAR_DAYS, s.EVENTS, s.CRUISE_CALLS, s.WEATHER_DAILY, s.ZONES],
+    "Calendar and context": [s.CALENDAR_DAYS, s.EVENTS, s.WEATHER_DAILY, s.ZONES],
     "Observed demand": [
         s.ZONES, s.CALENDAR_DAYS, s.TRIP_FLOWS, s.PRESENCE_DAILY, s.PRESENCE_MONTHLY,
         s.OVERNIGHT_STAYS, s.VISITOR_ORIGIN, s.RIDERSHIP, s.OCCUPANCY_OBSERVATIONS,
@@ -38,7 +38,6 @@ RELATIONS = [
     ("lines", "1", "service_daily", "*", "departures"),
     ("stations", "1", "service_daily", "*", ""),
     ("calendar_days", "1", "events", "*", "during"),
-    ("calendar_days", "1", "cruise_calls", "*", ""),
     ("calendar_days", "1", "weather_daily", "1", ""),
     ("zones", "0..1", "events", "*", "venue"),
     ("zones", "1", "trip_flows", "*", "origin / destination"),

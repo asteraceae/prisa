@@ -9,10 +9,9 @@ as "no" until someone does.
 | Verdict | Sources |
 |---|---|
 | Yes, attribution only (CC BY 4.0 or equivalent) | Open Data BCN (all datasets below), FGC open data, Renfe data portal, MITMA big-data mobility, INE, ministry national access point (NAP) GTFS, Generalitat open data |
-| Yes, but **share-alike** (CC BY-SA 4.0) | Port de Barcelona open data: anything we republish that is derived from it must carry the same licence |
 | Yes, **only for the app declared** when registering | TMB developer API (GTFS, iBus, iMetro). TMB can revoke access |
-| **No** without written permission | TMB ridership spreadsheets on tmb.cat (personal, non-commercial use only). Ask developer@tmb.cat |
-| Unverified | TRAM GTFS, AMB bus GTFS, Idescat (reuse allowed with citation; no explicit commercial clause), Observatori del Turisme PDF tables, LaLiga fixtures, third-party cruise schedules |
+| **No** without written permission | TMB ridership spreadsheets on tmb.cat (personal, non-commercial use only). Team decision 24 Oct 2026: use them for calibration during the competition; ask TMB in writing before any commercial use (see `data-requests.md`) |
+| Unverified | TRAM GTFS, AMB bus GTFS, Idescat (reuse allowed with citation; no explicit commercial clause), Observatori del Turisme PDF tables, LaLiga fixtures |
 
 Required attributions we already know of: "Basado en datos abiertos MITMA" with a
 link, "Powered by MITRAMS" for NAP feeds, and source plus update date for TMB, the
@@ -35,7 +34,7 @@ Generalitat and Idescat.
 | Tourist flats register `habitatges-us-turistic` | Open Data BCN | https://opendata-ajuntament.barcelona.cat/data/dataset/habitatges-us-turistic | flat, places, barri, lat/lon; quarterly | 2018 Q2 – 2026 Q3 | CC BY 4.0 |
 | Hotels / pensions / other accommodation | Open Data BCN | https://opendata-ajuntament.barcelona.cat/data/dataset/allotjaments-hotels | points, no bed counts | updated Oct 2023 | CC BY 4.0 |
 | Tourist intensity layers (2022, grid) | Open Data BCN / Barcelona Regional | https://opendata-ajuntament.barcelona.cat/data/dataset/intensitat-activitat-turistica | grid, inputs 2016–2019 | one-off | CC BY 4.0 |
-| Informe de l'activitat turística 2024 | Observatori del Turisme a Barcelona | https://ajuntament.barcelona.cat/turisme/sites/default/files/2026-03/2024_IAT_OTB_1.pdf | visitors per attraction; hotel places per district; cruise passengers | 1994–2024 | not stated |
+| Informe de l'activitat turística 2024 | Observatori del Turisme a Barcelona | https://ajuntament.barcelona.cat/turisme/sites/default/files/2026-03/2024_IAT_OTB_1.pdf | visitors per attraction; hotel places per district | 1994–2024 | not stated |
 
 Barri codes: the official number runs 01–73 across the whole city (la
 Barceloneta 03, el Fort Pienc 05). Telefónica's code is 8019 + district + two
@@ -99,8 +98,6 @@ pay-per-trip travellers.
 | Catalan holidays 2027 (Ordre EMT/52/2026) | Generalitat | 1 Jan, 6 Jan, 26 Mar, 29 Mar, 1 May, 24 Jun, 11 Sep, 12 Oct, 1 Nov, 6 Dec, 8 Dec, 25 Dec. Barcelona local holidays for 2027 not published yet | – |
 | School calendar 2026-27 (Ordre EDF/66/2026) | Generalitat | 8 Sep 2026 – 21 Jun 2027; Christmas 22 Dec – 7 Jan; Easter 20–29 Mar | – |
 | Concerts at large venues `recintes-gran-aforament` | Open Data BCN | 2023–2025 | CC BY 4.0 |
-| Cruise and ferry forecast | Port de Barcelona | rolling ~7 days, no passenger counts; **archive daily from now** | CC BY-SA 4.0 |
-| Passenger traffic statistics | Port de Barcelona | monthly, cruise vs ferry, embark / disembark / transit | 2010 – Sep 2026 | CC BY-SA 4.0 |
 | Weather | AEMET OpenData, Meteocat | daily | – | to check |
 
 Known 2027 events: MWC 1–4 Mar (Fira Gran Via, L'Hospitalet), Primavera Sound
@@ -114,5 +111,4 @@ Known 2027 events: MWC 1–4 Mar (Fira Gran Via, L'Hospitalet), Primavera Sound
   tourist-tax surcharges.
 - Spotify Camp Nou capacity going up in phases after it reopened in Nov 2025.
 - Gaudí centenary and the Sagrada Família towers (2026) inflate the baseline.
-- Planned cuts to cruise terminals.
 - Timed-ticket caps at Sagrada Família and Park Güell limit how far those sites can grow.
