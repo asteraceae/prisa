@@ -1,62 +1,20 @@
 # External data sources
 
-Checked 23 Oct 2026. "Commercial OK?" answers whether a commercial product may
-be built on the data. **Unverified** means we could not confirm it; treat it
-as "no" until someone does.
+We need to check whether we are allowed to use on commercial lisences or not.
 
-## Licence summary
-
-| Verdict | Sources |
-|---|---|
-| Yes, attribution only (CC BY 4.0 or equivalent) | Open Data BCN (all datasets below), FGC open data, Renfe data portal, MITMA big-data mobility, INE, ministry national access point (NAP) GTFS, Generalitat open data |
-| Yes, **only for the app declared** when registering | TMB developer API (GTFS, iBus, iMetro). TMB can revoke access |
-| **No** without written permission | TMB ridership spreadsheets on tmb.cat (personal, non-commercial use only). Team decision 24 Oct 2026: use them for calibration during the competition; ask TMB in writing before any commercial use (see `data-requests.md`) |
-| Unverified | TRAM GTFS, AMB bus GTFS, Idescat (reuse allowed with citation; no explicit commercial clause), Observatori del Turisme PDF tables, LaLiga fixtures |
-
-Required attributions we already know of: "Basado en datos abiertos MITMA" with a
-link, "Powered by MITRAMS" for NAP feeds, and source plus update date for TMB, the
-Generalitat and Idescat.
-
-## Telefónica (primary)
+## Telefónica (primary data)
 
 Spec: "Descripción de los Datasets actualizada" (14 Oct 2026), linked from
 https://www.upf.edu/web/catedra-telefonica/mobiledatachallenge; a copy is in the
 course folder as `Smart Steps - Descripcion datasets actualizada 2026-10-14.pdf`.
 
-**Access:** not public. Only teams selected for Phase 2 (announced 23 Oct) get
+**Access:** **not public**. Only teams selected for Phase 2 (announced 23 Oct) get
 the full data, from 24 Oct, after every team member signs a confidentiality
 agreement. It must never be committed or shared outside the team.
 
-| # | File | Table | Grain |
-|---|---|---|---|
-| M1 | movilidad entre barrios | `trip_flows` (barri_barri) | barri → barri x day x segment |
-| M2 | movilidad entre municipios | `trip_flows` (muni_muni) | municipality → municipality x day x segment |
-| M3 | movilidad entre barrios y municipios | `trip_flows` (barri_muni) | barri ↔ municipality x day x segment |
-| T1 | visitantes_unicos_municipio_yearmon | `presence_monthly` | municipality x month x segment x visitor type |
-| T2 | visitantes_unicos_municipio_date_dt | `presence_daily` | municipality x day x segment x visitor type |
-| T3 | pernoctaciones_semana | `overnight_stays` | municipality x week x segment x nights |
-| T4 | visitantes_unicos_barrio_yearmon | `presence_monthly` | barri x month x segment x visitor type |
-| T5 | visitantes_unicos_barrio_date_dt | `presence_daily` | barri x day x segment x visitor type |
-| T6 | visitantes_regionales_barrio_yearmon | `visitor_origin` | barri x month x municipality of residence |
-| T7 | visitantes_nacionales_barrio_yearmon | `visitor_origin` | barri x month x province of residence |
-| T8 | visitantes_internacionales_barrio_yearmon | `visitor_origin` | barri x month x country of residence |
-| T9 | visitantes_sociodemografico_barrio_yearmon | `visitor_profile` | barri x month x gender x age x income |
+## Geography and population Data
 
-All cover Jan 2023 – Aug 2025. Rules from the spec:
-- Mobility counts trips (one person can make several); tourism counts unique
-  people in a zone, which are never summed across days or zones.
-- `origen` is where the person lives, not where the trip starts.
-- Tourist = lives outside the province and spent at least one night; everyone
-  else is a day tripper (excursionista). Regional visitors are always day trippers.
-- Tourism files have no Residente segment; overnight stays cover only
-  international and national visitors.
-- Privacy threshold 15: trips below it are published as 0 (`censored`);
-  in tourism, groups below it are pooled into "NA" (stored as `ANONYMISED`).
-- Mobility excludes trips within the same barri or municipality.
-
-Load a delivery with `uv run python -m prisa.ingest <folder> --out data/processed`.
-
-## Geography and population
+Really the first one is the most important as it has the same grain as the telefonica data. The tourist intensity one is also worth looking at.
 
 | Dataset | Publisher | URL | Grain | Period | Licence |
 |---|---|---|---|---|---|
@@ -71,10 +29,10 @@ Load a delivery with `uv run python -m prisa.ingest <folder> --out data/processe
 Barri codes: the official number runs 01–73 across the whole city (la
 Barceloneta 03, el Fort Pienc 05). Telefónica's code is 8019 + district + two
 digits; whether those two digits are the city-wide number or restart per
-district is unconfirmed. `geo.infer_barri_numbering` decides it from the first
-real file.
 
 ## Transport supply
+
+The top one is exactly what we were looking for, it only needs attribution to its licence so its good.
 
 | Dataset | Publisher | URL | Licence |
 |---|---|---|---|
@@ -94,8 +52,7 @@ density behind TMB's "places" figure is not published, so we state our own
 
 ## Ridership and load (calibration)
 
-No open dataset gives hourly validations per station in Barcelona. For that,
-ask ATM (T-mobilitat) or TMB directly.
+No open dataset gives hourly load per station in Barcelona!!!. We might need to send an email to ATM or TMB directly.
 
 | Dataset | Publisher | Grain | Period | Licence |
 |---|---|---|---|---|
@@ -109,15 +66,14 @@ ask ATM (T-mobilitat) or TMB directly.
 | Public transport incidents | Generalitat (b8ba-rfcf) | event | to Oct 2026 | Generalitat open licence |
 
 Key figure: T-usual is 70.7% of T-mobilitat validations (ATM press release,
-Mar 2024). Pass holders don't pay per trip, so the daily price only reaches
-pay-per-trip travellers.
+Mar 2024). Pass woulfn't pay for our ticket so the price only affects pay-per-trip travellers.
 
-## Hourly and post-Aug-2025 mobility (to buttress the model)
+## Hourly and post-Aug-2025 mobility (to buttress the model cause how the fuck do you have a dataset that ends in 2025 bro!?)
 
 | Dataset | Publisher | Grain | Period | Licence |
 |---|---|---|---|---|
 | Big Data mobility study (`movilidad-opendata.mitma.es`) | Ministry of Transport (MITMA) | **hourly** OD; Barcelona at 10-district level only; Spanish residents only; activity at destination (`no_frecuente` is a proxy for visits); overnight stays | daily Jan 2022 – Jun 2025; after that sample days only (8–10 and 14–17 Aug, 13–19 Oct, 6–8 Dec 2025); methodology break 1 Jul 2025 | MITMA open licence, commercial OK, "Basado en datos abiertos MITMA" |
-| Tourism measured with mobile phones (experimental) | INE | municipality x month | inbound ends Dec 2025 (moves into FRONTUR); domestic continues | CC BY 4.0 |
+| [Tourism measured with mobile phones (experimental)](https://www.ine.es/experimental/turismo_moviles/experimental_turismo_moviles.htm) | INE | municipality x month | inbound ends Dec 2025 (moves into FRONTUR); domestic continues | CC BY 4.0 |
 | Hotel and tourist-apartment occupancy (EOH, EOAT) | INE | Barcelona x month | ongoing | CC BY 4.0 |
 | Traffic and bike counters `aforaments-detall` | Open Data BCN | ~880 counters x month (average daily by day type) | 2017–2025 | CC BY 4.0 |
 | Bicing station status | Open Data BCN | station x minutes | to 2026 | CC BY 4.0 |
