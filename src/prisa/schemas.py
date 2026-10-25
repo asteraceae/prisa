@@ -9,6 +9,9 @@ Layers:
   dimension  reference data that changes slowly (geography, network, calendar)
   fact       observations (Telefónica and external counts)
   derived    computed by us (indices, forecasts, fares)
+
+ANONYMISED is the label we store where Telefónica publishes "NA" for a pooled
+group of fewer than 15 people.
 """
 
 from __future__ import annotations
@@ -25,6 +28,7 @@ from prisa.enums import (
     Segment,
     SourceFile,
     TransportMode,
+    VisitorType,
     ZoneLevel,
 )
 
@@ -34,6 +38,8 @@ INT = "Int64"
 FLOAT = "float64"
 BOOL = "boolean"
 DATE = "datetime64[ns]"
+
+ANONYMISED = "ANONYMISED"
 
 
 @dataclass(frozen=True)
@@ -52,7 +58,7 @@ class Table:
     primary_key: tuple[str, ...]
     columns: tuple[Column, ...]
     doc: str = ""
-    # True while the column list is a guess (Telefónica tourism files have no published schema yet)
+    # True while the column list is a guess rather than taken from a published spec
     provisional: bool = False
     sources: tuple[str, ...] = field(default=())
 
@@ -311,71 +317,99 @@ TRIP_FLOWS = Table(
     sources=("Telefónica Smart Steps",),
 )
 
+# Tourism files (T1-T9). Counts are unique visitors: never sum them across
+# days, weeks or zones. Summing across segment or visitor_type is fine, those
+# are disjoint groups of people. There is no Residente segment in these files.
+# Groups under 15 people are pooled into an "NA" category (stored as
+# ANONYMISED) rather than zeroed, so there is no censored flag here.
+
 PRESENCE_DAILY = Table(
     "presence_daily",
     "fact",
-    ("day", "zone_id", "segment"),
+    ("day", "zone_id", "segment", "visitor_type"),
     (
         C("day", DATE),
-        C("zone_id", STR),
+        C("zone_id", STR, "municipality (T2) or barri (T5)"),
         C("segment", STR, enum=Segment),
-        C("unique_visitors", INT),
-        C("censored", BOOL),
+        C("visitor_type", STR, enum=VisitorType),
+        C("visitors", INT, "unique visitors that day"),
     ),
-    "Tourism files 2 and 5. Not additive across days or zones.",
-    provisional=True,
+    "T2 visitantes_unicos_municipio_date_dt and T5 visitantes_unicos_barrio_date_dt. "
+    "A tourist here stayed at least one night in the month the day belongs to.",
     sources=("Telefónica Smart Steps",),
 )
 
 PRESENCE_MONTHLY = Table(
     "presence_monthly",
     "fact",
-    ("year", "month", "zone_id", "segment"),
+    ("year", "month", "zone_id", "segment", "visitor_type"),
     (
         C("year", INT),
         C("month", INT),
-        C("zone_id", STR),
+        C("zone_id", STR, "municipality (T1) or barri (T4)"),
         C("segment", STR, enum=Segment),
-        C("unique_visitors", INT),
-        C("censored", BOOL),
+        C("visitor_type", STR, enum=VisitorType),
+        C("visitors", INT, "unique visitors that month"),
     ),
-    "Tourism files 1 and 4. Never compare with the sum of daily values.",
-    provisional=True,
+    "T1 visitantes_unicos_municipio_yearmon and T4 visitantes_unicos_barrio_yearmon. "
+    "Never compare with the sum of daily values.",
     sources=("Telefónica Smart Steps",),
 )
 
 OVERNIGHT_STAYS = Table(
     "overnight_stays",
     "fact",
-    ("year", "month", "zone_id", "segment", "nights"),
+    ("year", "month", "week", "zone_id", "segment", "nights"),
     (
         C("year", INT),
         C("month", INT),
-        C("zone_id", STR),
-        C("segment", STR, enum=Segment),
-        C("nights", STR, "bucket label as published, e.g. '1', '2-3', '4+'"),
-        C("tourists", INT),
+        C("week", INT, "week number as published"),
+        C("period", STR, "the week's date range as published"),
+        C("zone_id", STR, "municipality only"),
+        C("segment", STR, "international or national only", enum=Segment),
+        C("nights", INT, "nights spent in the municipality that week"),
+        C("visitors", INT, "visitors who spent that many nights"),
     ),
-    "Tourism file 3. Length of stay = how many days a visitor can shift a trip.",
-    provisional=True,
+    "T3 pernoctaciones_semana. Length of stay = how many days a visitor could shift a trip.",
     sources=("Telefónica Smart Steps",),
 )
 
 VISITOR_ORIGIN = Table(
     "visitor_origin",
     "fact",
-    ("year", "month", "zone_id", "segment", "origin_code"),
+    ("year", "month", "zone_id", "segment", "visitor_type", "origin_name"),
     (
         C("year", INT),
         C("month", INT),
-        C("zone_id", STR),
-        C("segment", STR, enum=Segment),
-        C("origin_code", STR, "municipality, province or country code"),
-        C("origin_name", STR),
+        C("zone_id", STR, "barri"),
+        C("segment", STR, "regional (T6), national (T7) or international (T8)", enum=Segment),
+        C("visitor_type", STR, "regional visitors are always day trippers", enum=VisitorType),
+        C("origin_code", STR, "INE municipality code; only published for regional visitors", nullable=True),
+        C("origin_name", STR, "municipality, province or country of residence; ANONYMISED for pooled groups"),
         C("visitors", INT),
     ),
-    "Tourism files 6-8.",
-    provisional=True,
+    "T6 visitantes_regionales_barrio_yearmon, T7 visitantes_nacionales_barrio_yearmon, "
+    "T8 visitantes_internacionales_barrio_yearmon.",
+    sources=("Telefónica Smart Steps",),
+)
+
+VISITOR_PROFILE = Table(
+    "visitor_profile",
+    "fact",
+    ("year", "month", "zone_id", "segment", "visitor_type", "gender", "age_band", "income_level"),
+    (
+        C("year", INT),
+        C("month", INT),
+        C("zone_id", STR, "barri"),
+        C("segment", STR, enum=Segment),
+        C("visitor_type", STR, enum=VisitorType),
+        C("gender", STR, "f / m / ANONYMISED"),
+        C("age_band", STR, "18-29 ... 70-99 / ANONYMISED"),
+        C("income_level", STR, "Bajo / Medio / Medio-Alto / Alto / ANONYMISED"),
+        C("visitors", INT),
+    ),
+    "T9 visitantes_sociodemografico_barrio_yearmon. Lets the fairness analysis ask who "
+    "the discount would reach (e.g. low-income visitors).",
     sources=("Telefónica Smart Steps",),
 )
 
@@ -616,7 +650,7 @@ TABLES: dict[str, Table] = {
         ZONES, DISTRICTS, ZONE_POPULATION, ZONE_ACCOMMODATION, HOTSPOTS,
         STATIONS, LINES, LINE_STOPS, VEHICLE_TYPES, SERVICE_DAILY, MODE_SHARE,
         CALENDAR_DAYS, EVENTS, WEATHER_DAILY,
-        TRIP_FLOWS, PRESENCE_DAILY, PRESENCE_MONTHLY, OVERNIGHT_STAYS, VISITOR_ORIGIN,
+        TRIP_FLOWS, PRESENCE_DAILY, PRESENCE_MONTHLY, OVERNIGHT_STAYS, VISITOR_ORIGIN, VISITOR_PROFILE,
         RIDERSHIP, OCCUPANCY_OBSERVATIONS, EXTERNAL_FLOWS, ZONE_CROSSWALK,
         PRESSURE_COMPONENTS, PRESSURE_INDEX, SATURATION, MODEL_RUNS, FORECASTS,
         FARE_PRODUCTS, FARE_CALENDARS, DAILY_FARES, SCENARIOS, SIMULATION_RESULTS,

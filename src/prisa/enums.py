@@ -20,6 +20,16 @@ SEGMENT_FROM_RAW = {
 }
 
 
+class VisitorType(StrEnum):
+    """Telefónica's `tipo_visitante` in the tourism files."""
+
+    TOURIST = "tourist"  # lives outside the province, stayed at least one night
+    DAY_TRIPPER = "day_tripper"  # everyone else ("excursionista")
+
+
+VISITOR_TYPE_FROM_RAW = {"Turista": VisitorType.TOURIST, "Excursionista": VisitorType.DAY_TRIPPER}
+
+
 class ZoneLevel(StrEnum):
     MUNICIPALITY = "municipality"
     BARRI = "barri"

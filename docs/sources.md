@@ -19,10 +19,42 @@ Generalitat and Idescat.
 
 ## Telefónica (primary)
 
-| Dataset | Grain | Period | Notes |
+Spec: "Descripción de los Datasets actualizada" (14 Oct 2026), linked from
+https://www.upf.edu/web/catedra-telefonica/mobiledatachallenge; a copy is in the
+course folder as `Smart Steps - Descripcion datasets actualizada 2026-10-14.pdf`.
+
+**Access:** not public. Only teams selected for Phase 2 (announced 23 Oct) get
+the full data, from 24 Oct, after every team member signs a confidentiality
+agreement. It must never be committed or shared outside the team.
+
+| # | File | Table | Grain |
 |---|---|---|---|
-| Smart Steps mobility: barri↔barri, municipality↔municipality, barri↔municipality | day x segment | Jan 2023 – Aug 2025 | Counts under 15 published as 0. No mode, no hour. Challenge terms apply |
-| Smart Steps tourism: 8 files (visitors by day/month for the municipality and per barri, overnight stays, visitor origin) | day or month | Jan 2023 – Aug 2025 | No column list published yet |
+| M1 | movilidad entre barrios | `trip_flows` (barri_barri) | barri → barri x day x segment |
+| M2 | movilidad entre municipios | `trip_flows` (muni_muni) | municipality → municipality x day x segment |
+| M3 | movilidad entre barrios y municipios | `trip_flows` (barri_muni) | barri ↔ municipality x day x segment |
+| T1 | visitantes_unicos_municipio_yearmon | `presence_monthly` | municipality x month x segment x visitor type |
+| T2 | visitantes_unicos_municipio_date_dt | `presence_daily` | municipality x day x segment x visitor type |
+| T3 | pernoctaciones_semana | `overnight_stays` | municipality x week x segment x nights |
+| T4 | visitantes_unicos_barrio_yearmon | `presence_monthly` | barri x month x segment x visitor type |
+| T5 | visitantes_unicos_barrio_date_dt | `presence_daily` | barri x day x segment x visitor type |
+| T6 | visitantes_regionales_barrio_yearmon | `visitor_origin` | barri x month x municipality of residence |
+| T7 | visitantes_nacionales_barrio_yearmon | `visitor_origin` | barri x month x province of residence |
+| T8 | visitantes_internacionales_barrio_yearmon | `visitor_origin` | barri x month x country of residence |
+| T9 | visitantes_sociodemografico_barrio_yearmon | `visitor_profile` | barri x month x gender x age x income |
+
+All cover Jan 2023 – Aug 2025. Rules from the spec:
+- Mobility counts trips (one person can make several); tourism counts unique
+  people in a zone, which are never summed across days or zones.
+- `origen` is where the person lives, not where the trip starts.
+- Tourist = lives outside the province and spent at least one night; everyone
+  else is a day tripper (excursionista). Regional visitors are always day trippers.
+- Tourism files have no Residente segment; overnight stays cover only
+  international and national visitors.
+- Privacy threshold 15: trips below it are published as 0 (`censored`);
+  in tourism, groups below it are pooled into "NA" (stored as `ANONYMISED`).
+- Mobility excludes trips within the same barri or municipality.
+
+Load a delivery with `uv run python -m prisa.ingest <folder> --out data/processed`.
 
 ## Geography and population
 

@@ -2,8 +2,7 @@
 
 Generated from `src/prisa/schemas.py` by `uv run python -m prisa.uml`. Do not edit by hand.
 
-`#` marks primary-key columns, `?` nullable ones. `<<provisional>>` tables
-are guesses until the Telefónica tourism files arrive.
+`#` marks primary-key columns, `?` nullable ones.
 
 ## Geography and hotspots
 
@@ -231,39 +230,54 @@ classDiagram
     #SourceFile source
   }
   class PresenceDaily {
-    <<fact provisional>>
+    <<fact>>
     #date day
     #string zone_id
     #Segment segment
-    +int unique_visitors
-    +boolean censored
+    #VisitorType visitor_type
+    +int visitors
   }
   class PresenceMonthly {
-    <<fact provisional>>
+    <<fact>>
     #int year
     #int month
     #string zone_id
     #Segment segment
-    +int unique_visitors
-    +boolean censored
+    #VisitorType visitor_type
+    +int visitors
   }
   class OvernightStays {
-    <<fact provisional>>
+    <<fact>>
     #int year
     #int month
+    #int week
+    +string period
     #string zone_id
     #Segment segment
-    #string nights
-    +int tourists
+    #int nights
+    +int visitors
   }
   class VisitorOrigin {
-    <<fact provisional>>
+    <<fact>>
     #int year
     #int month
     #string zone_id
     #Segment segment
-    #string origin_code
-    +string origin_name
+    #VisitorType visitor_type
+    +string? origin_code
+    #string origin_name
+    +int visitors
+  }
+  class VisitorProfile {
+    <<fact>>
+    #int year
+    #int month
+    #string zone_id
+    #Segment segment
+    #VisitorType visitor_type
+    #string gender
+    #string age_band
+    #string income_level
     +int visitors
   }
   class Ridership {
@@ -309,6 +323,7 @@ classDiagram
   Zones "1" --> "*" PresenceMonthly
   Zones "1" --> "*" OvernightStays
   Zones "1" --> "*" VisitorOrigin
+  Zones "1" --> "*" VisitorProfile
   Zones "1" --> "*" ZoneCrosswalk : maps
   ZoneCrosswalk "*" --> "*" ExternalFlows : re-zones
 ```
@@ -341,12 +356,12 @@ classDiagram
     #SourceFile source
   }
   class PresenceDaily {
-    <<fact provisional>>
+    <<fact>>
     #date day
     #string zone_id
     #Segment segment
-    +int unique_visitors
-    +boolean censored
+    #VisitorType visitor_type
+    +int visitors
   }
   class ServiceDaily {
     <<dimension>>
@@ -696,62 +711,83 @@ All three mobility files in one table. Intra-zone trips are not in the data.
 
 Sources: Telefónica Smart Steps
 
-### `presence_daily` (fact, provisional)
+### `presence_daily` (fact)
 
-Tourism files 2 and 5. Not additive across days or zones.
+T2 visitantes_unicos_municipio_date_dt and T5 visitantes_unicos_barrio_date_dt. A tourist here stayed at least one night in the month the day belongs to.
 
 | column | type | notes |
 |---|---|---|
 | `day` (key) | datetime64[ns] |  |
-| `zone_id` (key) | string |  |
+| `zone_id` (key) | string | municipality (T2) or barri (T5) |
 | `segment` (key) | Segment |  |
-| `unique_visitors` | Int64 |  |
-| `censored` | boolean |  |
+| `visitor_type` (key) | VisitorType |  |
+| `visitors` | Int64 | unique visitors that day |
 
 Sources: Telefónica Smart Steps
 
-### `presence_monthly` (fact, provisional)
+### `presence_monthly` (fact)
 
-Tourism files 1 and 4. Never compare with the sum of daily values.
+T1 visitantes_unicos_municipio_yearmon and T4 visitantes_unicos_barrio_yearmon. Never compare with the sum of daily values.
 
 | column | type | notes |
 |---|---|---|
 | `year` (key) | Int64 |  |
 | `month` (key) | Int64 |  |
-| `zone_id` (key) | string |  |
+| `zone_id` (key) | string | municipality (T1) or barri (T4) |
 | `segment` (key) | Segment |  |
-| `unique_visitors` | Int64 |  |
-| `censored` | boolean |  |
+| `visitor_type` (key) | VisitorType |  |
+| `visitors` | Int64 | unique visitors that month |
 
 Sources: Telefónica Smart Steps
 
-### `overnight_stays` (fact, provisional)
+### `overnight_stays` (fact)
 
-Tourism file 3. Length of stay = how many days a visitor can shift a trip.
+T3 pernoctaciones_semana. Length of stay = how many days a visitor could shift a trip.
 
 | column | type | notes |
 |---|---|---|
 | `year` (key) | Int64 |  |
 | `month` (key) | Int64 |  |
-| `zone_id` (key) | string |  |
-| `segment` (key) | Segment |  |
-| `nights` (key) | string | bucket label as published, e.g. '1', '2-3', '4+' |
-| `tourists` | Int64 |  |
+| `week` (key) | Int64 | week number as published |
+| `period` | string | the week's date range as published |
+| `zone_id` (key) | string | municipality only |
+| `segment` (key) | Segment | international or national only |
+| `nights` (key) | Int64 | nights spent in the municipality that week |
+| `visitors` | Int64 | visitors who spent that many nights |
 
 Sources: Telefónica Smart Steps
 
-### `visitor_origin` (fact, provisional)
+### `visitor_origin` (fact)
 
-Tourism files 6-8.
+T6 visitantes_regionales_barrio_yearmon, T7 visitantes_nacionales_barrio_yearmon, T8 visitantes_internacionales_barrio_yearmon.
 
 | column | type | notes |
 |---|---|---|
 | `year` (key) | Int64 |  |
 | `month` (key) | Int64 |  |
-| `zone_id` (key) | string |  |
+| `zone_id` (key) | string | barri |
+| `segment` (key) | Segment | regional (T6), national (T7) or international (T8) |
+| `visitor_type` (key) | VisitorType | regional visitors are always day trippers |
+| `origin_code` | string, nullable | INE municipality code; only published for regional visitors |
+| `origin_name` (key) | string | municipality, province or country of residence; ANONYMISED for pooled groups |
+| `visitors` | Int64 |  |
+
+Sources: Telefónica Smart Steps
+
+### `visitor_profile` (fact)
+
+T9 visitantes_sociodemografico_barrio_yearmon. Lets the fairness analysis ask who the discount would reach (e.g. low-income visitors).
+
+| column | type | notes |
+|---|---|---|
+| `year` (key) | Int64 |  |
+| `month` (key) | Int64 |  |
+| `zone_id` (key) | string | barri |
 | `segment` (key) | Segment |  |
-| `origin_code` (key) | string | municipality, province or country code |
-| `origin_name` | string |  |
+| `visitor_type` (key) | VisitorType |  |
+| `gender` (key) | string | f / m / ANONYMISED |
+| `age_band` (key) | string | 18-29 ... 70-99 / ANONYMISED |
+| `income_level` (key) | string | Bajo / Medio / Medio-Alto / Alto / ANONYMISED |
 | `visitors` | Int64 |  |
 
 Sources: Telefónica Smart Steps

@@ -69,8 +69,42 @@ def to_trip_flows(raw: pd.DataFrame, source: SourceFile) -> pd.DataFrame:
     return schemas.check(out, schemas.TRIP_FLOWS)
 
 
-def load_trip_flows(path: Path, source: SourceFile) -> pd.DataFrame:
-    return to_trip_flows(read_raw(Path(path), source), source)
+def read_head(path: Path, n: int = 50_000) -> pd.DataFrame:
+    """First rows of a raw file, as text, for recognising what it is."""
+    if path.suffix == ".parquet":
+        return pd.read_parquet(path).head(n).astype(str)
+    return pd.read_csv(path, dtype=str, keep_default_na=False, nrows=n)
+
+
+def infer_source(columns: list[str], sample: pd.DataFrame | None = None) -> SourceFile | None:
+    """Which mobility file this is, from its columns (the brief gives no file names).
+
+    No barri columns -> municipality file. Barri columns plus any end outside
+    Barcelona (or a "-" barri) -> barri<->municipality file. Otherwise barri<->barri.
+    Returns None for anything that isn't a mobility file.
+    """
+    cols = set(columns)
+    if not set(RAW_COLUMNS[SourceFile.MUNI_MUNI]) <= cols:
+        return None
+    if not set(_BARRI_COLS) <= cols:
+        return SourceFile.MUNI_MUNI
+    if sample is None:
+        raise ValueError("need rows to tell the barri<->barri file from the barri<->municipality file")
+    munis = pd.concat([sample["municipio_origen"], sample["municipio_destino"]]).map(geo.municipality_code)
+    barris = pd.concat([sample["barrio_origen"], sample["barrio_destino"]]).str.strip()
+    if (munis != geo.BARCELONA).any() or barris.isin(geo.MISSING).any():
+        return SourceFile.BARRI_MUNI
+    return SourceFile.BARRI_BARRI
+
+
+def load_trip_flows(path: Path, source: SourceFile | None = None) -> pd.DataFrame:
+    path = Path(path)
+    if source is None:
+        head = read_head(path)
+        source = infer_source(list(head.columns), head)
+        if source is None:
+            raise ValueError(f"{path.name}: not a mobility file")
+    return to_trip_flows(read_raw(path, source), source)
 
 
 def drop_barcelona_boundary_duplicates(flows: pd.DataFrame) -> pd.DataFrame:

@@ -15,7 +15,7 @@ GROUPS = {
     "Calendar and context": [s.CALENDAR_DAYS, s.EVENTS, s.WEATHER_DAILY, s.ZONES],
     "Observed demand": [
         s.ZONES, s.CALENDAR_DAYS, s.TRIP_FLOWS, s.PRESENCE_DAILY, s.PRESENCE_MONTHLY,
-        s.OVERNIGHT_STAYS, s.VISITOR_ORIGIN, s.RIDERSHIP, s.OCCUPANCY_OBSERVATIONS,
+        s.OVERNIGHT_STAYS, s.VISITOR_ORIGIN, s.VISITOR_PROFILE, s.RIDERSHIP, s.OCCUPANCY_OBSERVATIONS,
         s.EXTERNAL_FLOWS, s.ZONE_CROSSWALK,
     ],
     "Pressure, saturation and forecasts": [
@@ -48,6 +48,7 @@ RELATIONS = [
     ("zones", "1", "presence_monthly", "*", ""),
     ("zones", "1", "overnight_stays", "*", ""),
     ("zones", "1", "visitor_origin", "*", ""),
+    ("zones", "1", "visitor_profile", "*", ""),
     ("zones", "1", "zone_crosswalk", "*", "maps"),
     ("zone_crosswalk", "*", "external_flows", "*", "re-zones"),
     ("trip_flows", "*", "pressure_components", "*", "inbound, anomaly"),
@@ -103,8 +104,7 @@ def render() -> str:
         "",
         "Generated from `src/prisa/schemas.py` by `uv run python -m prisa.uml`. Do not edit by hand.",
         "",
-        "`#` marks primary-key columns, `?` nullable ones. `<<provisional>>` tables",
-        "are guesses until the Telefónica tourism files arrive.",
+        "`#` marks primary-key columns, `?` nullable ones.",
     ]
     for title, tables in GROUPS.items():
         parts += ["", f"## {title}", "", "```mermaid", diagram(tables), "```"]

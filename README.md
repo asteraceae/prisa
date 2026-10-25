@@ -11,7 +11,10 @@ src/prisa/
   enums.py           closed vocabularies (segments, modes, fare kinds...)
   schemas.py         every table as a column contract + validate()/check()
   geo.py             zone ids: barri 80190103 / municipality 08019
-  ingest/telefonica  raw Smart Steps mobility files -> trip_flows
+  ingest/            raw Telefónica files -> tables (python -m prisa.ingest)
+    telefonica.py    mobility files M1-M3 -> trip_flows
+    tourism.py       tourism files T1-T9 -> presence, stays, origin, profile
+  collect.py         archives live feeds (FGC occupancy) on the home server
   pressure.py        pressure index components and weighted composite
   saturation.py      people passing / (vehicles x capacity), per stop and line
   fares.py           daily discount calendar and the resident fairness check
@@ -33,6 +36,7 @@ notebooks/           analysis notebooks (D1)
 uv sync
 uv run pytest
 uv run python -m prisa.uml > docs/data-model.md   # after changing schemas.py
+uv run python -m prisa.ingest data/raw/telefonica --out data/processed   # once the data arrives
 ```
 
 ## Conventions

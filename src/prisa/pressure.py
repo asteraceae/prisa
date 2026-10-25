@@ -50,12 +50,12 @@ def inbound_intensity(flows: pd.DataFrame, zones: pd.DataFrame) -> pd.DataFrame:
 def visitor_density(presence_daily: pd.DataFrame, population: pd.DataFrame) -> pd.DataFrame:
     visitors = (
         presence_daily[presence_daily["segment"] != Segment.RESIDENT.value]
-        .groupby(["day", "zone_id"], as_index=False)["unique_visitors"]
-        .sum()  # summing segments of one day and zone is fine; summing days is not
+        .groupby(["day", "zone_id"], as_index=False)["visitors"]
+        .sum()  # segments and visitor types are disjoint groups; summing days is not allowed
     )
     visitors["year"] = visitors["day"].dt.year
     df = visitors.merge(population, on=["zone_id", "year"])
-    return df.assign(raw=df["unique_visitors"] / df["population"])[["day", "zone_id", "raw"]]
+    return df.assign(raw=df["visitors"] / df["population"])[["day", "zone_id", "raw"]]
 
 
 def anomaly(flows: pd.DataFrame) -> pd.DataFrame:
