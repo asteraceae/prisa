@@ -2,7 +2,17 @@
 
 Column names follow "Descripción de los Datasets actualizada" (14 Oct 2026),
 linked from the challenge page. Files are recognised by name, e.g.
-visitantes_unicos_barrio_date_dt.csv -> T5 -> presence_daily.
+visitantes_unicos_barrio_date_dt.csv -> T5 -> presence_daily. The delivery has
+one folder per month (202301/ ... 202508/) holding all nine files.
+
+Found in the real files (Nov 2026), beyond the spec:
+  * separator is ";" (detected per file);
+  * age bands are written "1829", "3039"... and stored as "18-29";
+  * groups under 15 people are pooled into remainder rows with "NA" even in
+    key columns (barri, day, origen, tipo_visitante). Those rows can't be
+    placed, so they are split off as residuals and only their size is kept
+    (see `load`); "NA" in a descriptive column (country, gender...) becomes
+    ANONYMISED and the row stays.
 """
 
 from __future__ import annotations
@@ -47,8 +57,25 @@ def read_raw(path: Path, **read_kwargs) -> pd.DataFrame:
     if path.suffix == ".parquet":
         df = pd.read_parquet(path, **read_kwargs).astype(str)
     else:
-        df = pd.read_csv(path, dtype=str, keep_default_na=False, **read_kwargs)
+        with open(path, encoding="utf-8-sig") as f:
+            header = f.readline()
+        sep = ";" if header.count(";") > header.count(",") else ","
+        df = pd.read_csv(path, dtype=str, keep_default_na=False, sep=sep, encoding="utf-8-sig", **read_kwargs)
     return df.rename(columns=_norm)
+
+
+# columns that place a row; "NA" in any of them makes it a residual
+_PLACING = ["date_dt", "cod_barrio", "cod_municipio", "origen", "tipo_visitante"]
+
+
+def residual_mask(raw: pd.DataFrame) -> pd.Series:
+    cols = [c for c in _PLACING if c in raw.columns]
+    return raw[cols].apply(lambda s: s.str.strip().isin(_NA)).any(axis=1)
+
+
+def _age_band(s: pd.Series) -> pd.Series:
+    s = s.str.strip()
+    return s.where(~s.str.fullmatch(r"\d{4}"), s.str[:2] + "-" + s.str[2:])
 
 
 def _require(df: pd.DataFrame, cols: list[str], name: str) -> None:
@@ -87,7 +114,9 @@ def _count(s: pd.Series) -> pd.Series:
 
 
 def to_table(raw: pd.DataFrame, key: str) -> pd.DataFrame:
+    """Rows that can be placed, in the table's contract (residuals are dropped here)."""
     table, fixed_segment = FILES[key]
+    raw = raw.loc[~residual_mask(raw)]
     year, month = _year_month(raw)
     if fixed_segment is not None:
         segment = pd.Series(fixed_segment.value, index=raw.index, dtype="string")
@@ -133,7 +162,7 @@ def to_table(raw: pd.DataFrame, key: str) -> pd.DataFrame:
     elif table is schemas.VISITOR_PROFILE:
         _require(raw, ["mes", "cod_barrio", "origen", "tipo_visitante", "genero", "edad", "nivel_renta", "visitantes"], key)
         out = {"year": year, "month": month, "zone_id": zone, "segment": segment, "visitor_type": vtype,
-               "gender": _label(raw["genero"]), "age_band": _label(raw["edad"]),
+               "gender": _label(raw["genero"]), "age_band": _label(_age_band(raw["edad"])),
                "income_level": _label(raw["nivel_renta"]), "visitors": _count(raw["visitantes"])}  # fmt: skip
     else:  # pragma: no cover
         raise AssertionError(table.name)
@@ -143,9 +172,17 @@ def to_table(raw: pd.DataFrame, key: str) -> pd.DataFrame:
     return schemas.check(df[table.column_names], table)
 
 
-def load(path: Path, **read_kwargs) -> tuple[schemas.Table, pd.DataFrame]:
+def load(path: Path, **read_kwargs) -> tuple[schemas.Table, pd.DataFrame, dict]:
+    """(table, rows, residual summary) for one tourism file."""
     key = identify(path)
     if key is None:
         raise ValueError(f"{Path(path).name}: not a known tourism file ({', '.join(FILES)})")
-    return FILES[key][0], to_table(read_raw(path, **read_kwargs), key)
-
+    raw = read_raw(path, **read_kwargs)
+    res = raw.loc[residual_mask(raw)]
+    residual = {
+        "file": key,
+        "rows": len(res),
+        "visitors": int(pd.to_numeric(res["visitantes"]).sum()) if len(res) else 0,
+        "total_visitors": int(pd.to_numeric(raw["visitantes"]).sum()),
+    }
+    return FILES[key][0], to_table(raw, key), residual

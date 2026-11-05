@@ -16,9 +16,11 @@ def test_codes_keep_leading_zero():
     assert geo.municipality_code(8019) == "08019"
     assert geo.municipality_code("8019.0") == "08019"
     assert geo.barri_code("-") is None
-    assert geo.zone_id("08019", "80190103") == "80190103"
+    assert geo.zone_id("08019", "080190103") == "080190103"
+    assert geo.zone_id("08019", "80190103") == "080190103"  # spec-PDF form is padded
     assert geo.zone_id("08101", "-") == "08101"
-    assert geo.district_of("80190103") == 1
+    assert geo.district_of("080190903") == 9
+    assert geo.barri_in_district("080190903") == 3
     with pytest.raises(ValueError):
         geo.barri_code("80800101")
 
@@ -27,9 +29,9 @@ def test_trip_flows_from_raw():
     raw = raw_rows(
         SourceFile.BARRI_MUNI,
         [
-            ("2024-05-11", "Sábado", "5", "Internacional", "8019", "Barcelona", "80190101", "el Raval",
+            ("2024-05-11", "Sábado", "5", "Internacional", "8019", "Barcelona", "080190101", "el Raval",
              "08101", "L'Hospitalet", "-", "-", "120"),
-            ("2024-05-11", "Sábado", "5", "Residente", "8019", "Barcelona", "80190103", "la Barceloneta",
+            ("2024-05-11", "Sábado", "5", "Residente", "8019", "Barcelona", "080190103", "la Barceloneta",
              "08101", "L'Hospitalet", "-", "-", "0"),
         ],
     )  # fmt: skip
@@ -45,13 +47,13 @@ def test_boundary_duplicates_dropped():
     flows = pd.DataFrame(
         {
             "day": [day, day, day],
-            "origin_zone_id": pd.array(["80190101", "08019", "08101"], dtype="string"),
+            "origin_zone_id": pd.array(["080190101", "08019", "08101"], dtype="string"),
             "dest_zone_id": pd.array(["08101", "08101", "08015"], dtype="string"),
             "source": pd.array(["barri_muni", "muni_muni", "muni_muni"], dtype="string"),
         }
     )
     kept = telefonica.drop_barcelona_boundary_duplicates(flows)
-    assert kept["origin_zone_id"].tolist() == ["80190101", "08101"]
+    assert kept["origin_zone_id"].tolist() == ["080190101", "08101"]
 
 
 def test_validate_reports_problems():
@@ -125,10 +127,10 @@ def test_reference_tables_validate():
 
 
 def test_infer_barri_numbering():
-    # el Fort Pienc is official barri 05 in district 02
-    assert geo.infer_barri_numbering(pd.Series(["80190103", "80190205"])) == "city_wide"
-    assert geo.infer_barri_numbering(pd.Series(["80190103", "80190201"])) == "per_district"
-    assert geo.infer_barri_numbering(pd.Series(["80190103"])) == "unknown"
+    # la Verneda i la Pau is official barri 73 (district 10); the real data restarts per district
+    assert geo.infer_barri_numbering(pd.Series(["080190103", "080191073"])) == "city_wide"
+    assert geo.infer_barri_numbering(pd.Series(["080190103", "080190201"])) == "per_district"
+    assert geo.infer_barri_numbering(pd.Series(["080190103"])) == "unknown"
 
 
 def test_capacity_at_both_densities():

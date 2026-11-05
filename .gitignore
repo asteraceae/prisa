@@ -12,3 +12,6 @@ data/processed/*
 
 # Reference CSVs we write by hand (data/reference/) are committed.
 # Large downloaded reference files go in data/raw/ instead.
+
+# Confidential Telefónica delivery (NDA): never commit
+data/real/

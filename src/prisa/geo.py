@@ -3,12 +3,17 @@
 A zone is either a Barcelona barri or a municipality of the province. Both
 live in the same `zone_id` column, told apart by length:
 
-    80190103  barri: 8019 (Barcelona) + 01 (district) + 03 (barri)
-    08019     municipality: 5-digit INE code, leading zero kept
+    080190103  barri: 08019 (Barcelona) + 01 (district) + 03 (barri within district)
+    08019      municipality: 5-digit INE code, leading zero kept
 
-Telefónica's barri code drops the leading zero of 08019, which is why the
-barri prefix is 8019. Read every code as a string: a numeric read turns
-08019 into 8019 and joins against INE or Open Data BCN fail silently.
+This is the format of the real Telefónica delivery (Nov 2026). The spec PDF
+showed 8-digit codes (80190103) without the leading zero; those are accepted
+and padded. The last two digits restart in every district, so they are NOT the
+official city-wide barri number (1-73): el Bon Pastor is 080190903 here and
+barri 59 officially. `zones.barri_number` holds the official number.
+
+Read every code as a string: a numeric read turns 08019 into 8019 and joins
+against INE or Open Data BCN fail silently.
 """
 
 from __future__ import annotations
@@ -18,7 +23,9 @@ import pandas as pd
 from prisa.enums import ZoneLevel
 
 BARCELONA = "08019"
-BARRI_PREFIX = "8019"
+BARRI_PREFIX = "08019"
+BARRI_LEN = 9
+MAX_BARRIS_PER_DISTRICT = 13  # Nou Barris
 MISSING = {"", "-", "nan", "None", "<NA>"}
 
 
@@ -41,7 +48,9 @@ def barri_code(raw: object) -> str | None:
     s = _clean(raw)
     if s in MISSING:
         return None
-    if not (s.isdigit() and len(s) == 8 and s.startswith(BARRI_PREFIX)):
+    if s.isdigit() and len(s) == BARRI_LEN - 1:  # spec-PDF form without the leading zero
+        s = "0" + s
+    if not (s.isdigit() and len(s) == BARRI_LEN and s.startswith(BARRI_PREFIX)):
         raise ValueError(f"not a Barcelona barri code: {raw!r}")
     return s
 
@@ -53,33 +62,33 @@ def zone_id(municipality: object, barri: object = None) -> str:
 
 
 def zone_level(zid: str) -> ZoneLevel:
-    return ZoneLevel.BARRI if len(zid) == 8 else ZoneLevel.MUNICIPALITY
+    return ZoneLevel.BARRI if len(zid) == BARRI_LEN else ZoneLevel.MUNICIPALITY
 
 
 def district_of(barri: str) -> int:
-    return int(barri[4:6])
+    return int(barri[5:7])
+
+
+def barri_in_district(barri: str) -> int:
+    """Position of the barri inside its district (the code's last two digits)."""
+    return int(barri[7:9])
 
 
 def municipality_of(zid: str) -> str:
-    return BARCELONA if len(zid) == 8 else zid
+    return BARCELONA if len(zid) == BARRI_LEN else zid
 
 
 def infer_barri_numbering(codes: pd.Series) -> str:
     """Tell whether the last two digits are the official city-wide number (1-73) or restart per district.
 
-    Official numbering is city-wide: la Barceloneta is 03, el Fort Pienc (Eixample) is 05.
-    Ciutat Vella can't tell the two apart, so look at any other district: if
-    its smallest suffix is above 01, the suffix is the city-wide number.
+    No district has more than 13 barris (Nou Barris), so a position above 13
+    can only be a city-wide number. Ciutat Vella (01-04) fits both schemes,
+    so codes from district 01 alone can't decide.
     """
-    codes = codes.dropna().astype(str).unique()
-    by_district: dict[int, int] = {}
-    for c in codes:
-        d, n = district_of(c), int(c[6:8])
-        by_district[d] = min(n, by_district.get(d, n))
-    others = {d: n for d, n in by_district.items() if d != 1}
-    if not others:
+    codes = pd.Series(codes).dropna().astype(str).unique()
+    if not len(codes) or all(district_of(c) == 1 for c in codes):
         return "unknown"
-    return "city_wide" if any(n > 1 for n in others.values()) else "per_district"
+    return "city_wide" if any(barri_in_district(c) > MAX_BARRIS_PER_DISTRICT for c in codes) else "per_district"
 
 
 # Vectorised versions for whole columns
@@ -94,4 +103,4 @@ def zone_id_series(municipality: pd.Series, barri: pd.Series | None = None) -> p
 
 
 def zone_level_series(zids: pd.Series) -> pd.Series:
-    return zids.str.len().map({8: ZoneLevel.BARRI.value, 5: ZoneLevel.MUNICIPALITY.value}).astype("string")
+    return zids.str.len().map({BARRI_LEN: ZoneLevel.BARRI.value, 5: ZoneLevel.MUNICIPALITY.value}).astype("string")
