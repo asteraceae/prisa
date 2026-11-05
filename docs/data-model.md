@@ -53,10 +53,18 @@ classDiagram
     +int? visitors_year
     +string? source
   }
+  class BarriGeometry {
+    <<dimension>>
+    #string zone_id
+    +string wkt_wgs84
+    +float64 centroid_lat
+    +float64 centroid_lon
+  }
   Districts "1" --> "*" Zones : contains barris
   Zones "1" --> "*" ZonePopulation : per year
   Zones "1" --> "*" ZoneAccommodation : per year
   Zones "1" --> "*" Hotspots : located in
+  Zones "1" --> "1" BarriGeometry : boundary
 ```
 
 ## Transport network (supply)
@@ -111,6 +119,16 @@ classDiagram
     +float64? standing_area_m2
     +string source
   }
+  class ServiceByDaytype {
+    <<dimension>>
+    #string line_id
+    #string station_id
+    #int direction
+    #DayType day_type
+    +int departures
+    +int departures_peak_hour
+    +int peak_hour
+  }
   class ServiceDaily {
     <<dimension>>
     #date day
@@ -134,6 +152,7 @@ classDiagram
   VehicleTypes "1" --> "*" Lines : runs
   Lines "1" --> "*" ServiceDaily : departures
   Stations "1" --> "*" ServiceDaily
+  Lines "1" --> "*" ServiceByDaytype : departures
 ```
 
 ## Calendar and context
@@ -299,6 +318,18 @@ classDiagram
     +float64 occupancy_pct
     +string source
   }
+  class OccupancyHourly {
+    <<derived>>
+    #string line_id
+    #string day_type
+    #int hour
+    +float64 mean_occupancy_pct
+    +float64 p90_occupancy_pct
+    +int observations
+    +int days
+    +date first_day
+    +date last_day
+  }
   class ExternalFlows {
     <<fact>>
     #date day
@@ -317,6 +348,18 @@ classDiagram
     #string zone_id
     +float64 weight
   }
+  class HourlyProfile {
+    <<derived>>
+    #string source
+    #Scope scope
+    #int? district_code
+    #DayType day_type
+    #Traveller traveller
+    #int hour
+    +float64 share
+    +float64 trips
+    +int n_days
+  }
   Zones "1" --> "*" TripFlows : origin / destination
   CalendarDays "1" --> "*" TripFlows
   Zones "1" --> "*" PresenceDaily
@@ -326,9 +369,10 @@ classDiagram
   Zones "1" --> "*" VisitorProfile
   Zones "1" --> "*" ZoneCrosswalk : maps
   ZoneCrosswalk "*" --> "*" ExternalFlows : re-zones
+  OccupancyObservations "*" --> "*" OccupancyHourly : summarised
 ```
 
-## Pressure, saturation and forecasts
+## Daily summaries, pressure, saturation and forecasts
 
 ```mermaid
 classDiagram
@@ -363,14 +407,58 @@ classDiagram
     #VisitorType visitor_type
     +int visitors
   }
-  class ServiceDaily {
-    <<dimension>>
+  class BarriDay {
+    <<derived>>
     #date day
+    #string zone_id
+    +float64 trips_in
+    +float64 trips_in_international
+    +float64 trips_in_national
+    +float64 trips_in_regional
+    +float64 trips_in_resident
+    +float64 trips_out
+    +float64? visitors
+    +float64? visitors_international
+    +float64? visitors_national
+    +float64? visitors_regional
+    +float64? tourists
+    +float64? day_trippers
+  }
+  class CityDay {
+    <<derived>>
+    #date day
+    +float64 visitors
+    +float64 visitors_international
+    +float64 visitors_national
+    +float64 visitors_regional
+    +float64 tourists
+    +float64 day_trippers
+    +float64 trips_internal
+    +float64 trips_into_city
+    +float64 trips_out_of_city
+    +float64 trips_internal_visitor
+  }
+  class ServiceByDaytype {
+    <<dimension>>
     #string line_id
     #string station_id
     #int direction
+    #DayType day_type
     +int departures
-    +int? departures_peak_hour
+    +int departures_peak_hour
+    +int peak_hour
+  }
+  class TransitLoad {
+    <<derived>>
+    #date day
+    #string zone_id
+    #float64 standing_density
+    +float64 demand
+    +float64 places
+    +float64 peak_demand
+    +float64 peak_places
+    +float64 ratio_daily
+    +float64 ratio_peak_hour
   }
   class PressureComponents {
     <<derived>>
@@ -386,19 +474,6 @@ classDiagram
     #string zone_id
     #string weights_id
     +float64 value
-  }
-  class Saturation {
-    <<derived>>
-    #date day
-    #string station_id
-    #string line_id
-    #int direction
-    #float64 standing_density
-    +TransportMode mode
-    +float64 demand_daily
-    +float64 capacity_daily
-    +float64 ratio_daily
-    +float64? ratio_peak_hour
   }
   class ModelRuns {
     <<derived>>
@@ -421,11 +496,16 @@ classDiagram
   }
   Zones "1" --> "*" TripFlows : origin / destination
   Zones "1" --> "*" PresenceDaily
-  TripFlows "*" --> "*" PressureComponents : inbound, anomaly
-  PresenceDaily "*" --> "*" PressureComponents : visitor density
-  TripFlows "*" --> "*" Saturation : demand
-  ServiceDaily "*" --> "*" Saturation : capacity
-  Saturation "*" --> "*" PressureComponents : transit load
+  TripFlows "*" --> "*" BarriDay : M1 + M3
+  PresenceDaily "*" --> "*" BarriDay : T5
+  TripFlows "*" --> "*" CityDay : M1, M2
+  PresenceDaily "*" --> "*" CityDay : T2
+  BarriDay "*" --> "*" PressureComponents : density, arrivals, anomaly
+  BarriDay "*" --> "*" TransitLoad : boardings
+  ServiceByDaytype "*" --> "*" TransitLoad : places
+  TransitLoad "*" --> "*" PressureComponents : transit load
+  BarriDay "*" --> "*" ModelRuns : training data
+  CityDay "*" --> "*" ModelRuns : training data
   PressureComponents "*" --> "*" PressureIndex : weighted
   ModelRuns "1" --> "*" Forecasts : produces
   PressureIndex "*" --> "*" ModelRuns : training target
@@ -475,6 +555,7 @@ classDiagram
     #date day
     +float64 expected_pressure
     +float64 discount
+    +string? tier
   }
   class Scenarios {
     <<derived>>
@@ -512,7 +593,7 @@ One row per barri of Barcelona and per municipality of the province.
 
 | column | type | notes |
 |---|---|---|
-| `zone_id` (key) | string | 8-digit barri code (80190103) or 5-digit INE municipality code (08019) |
+| `zone_id` (key) | string | 9-digit barri code (080190103) or 5-digit INE municipality code (08019) |
 | `level` | ZoneLevel |  |
 | `name` | string |  |
 | `municipality_code` | string | 5-digit INE code, leading zero kept |
@@ -565,7 +646,7 @@ Sources: Open Data BCN habitatges-us-turistic, Observatori del Turisme
 | `name` | string |  |
 | `type` | HotspotType |  |
 | `barri_number` | Int64, nullable | official 1-73; null for city-wide (Bus Turístic) |
-| `zone_id` | string, nullable | resolved from barri_number once Telefónica's numbering is confirmed |
+| `zone_id` | string, nullable | resolved from barri_number via data/reference/barri_crosswalk.csv |
 | `lat` | float64, nullable |  |
 | `lon` | float64, nullable |  |
 | `annual_visitors` | Int64, nullable |  |
@@ -849,6 +930,43 @@ Maps another source's zoning onto our barris/municipalities.
 | `zone_id` (key) | string |  |
 | `weight` | float64 | share of ext_zone that falls in zone_id (area or population) |
 
+### `barri_day` (derived)
+
+One row per barri per day, Jan 2023 - Aug 2025.
+
+| column | type | notes |
+|---|---|---|
+| `day` (key) | datetime64[ns] |  |
+| `zone_id` (key) | string |  |
+| `trips_in` | float64 | trips ending in the barri, from other barris or municipalities |
+| `trips_in_international` | float64 | trips arriving from international travellers |
+| `trips_in_national` | float64 | trips arriving from national travellers |
+| `trips_in_regional` | float64 | trips arriving from regional travellers |
+| `trips_in_resident` | float64 | trips arriving from resident travellers |
+| `trips_out` | float64 | trips starting in the barri |
+| `visitors` | float64, nullable | non-resident unique visitors present (T5) |
+| `visitors_international` | float64, nullable |  |
+| `visitors_national` | float64, nullable |  |
+| `visitors_regional` | float64, nullable |  |
+| `tourists` | float64, nullable | stayed at least one night |
+| `day_trippers` | float64, nullable |  |
+
+### `city_day` (derived)
+
+| column | type | notes |
+|---|---|---|
+| `day` (key) | datetime64[ns] |  |
+| `visitors` | float64 | non-resident unique visitors in Barcelona (T2) |
+| `visitors_international` | float64 |  |
+| `visitors_national` | float64 |  |
+| `visitors_regional` | float64 |  |
+| `tourists` | float64 |  |
+| `day_trippers` | float64 |  |
+| `trips_internal` | float64 | barri -> barri trips inside Barcelona (M1) |
+| `trips_into_city` | float64 | trips from other municipalities into Barcelona (M2) |
+| `trips_out_of_city` | float64 | trips from Barcelona to other municipalities (M2) |
+| `trips_internal_visitor` | float64 | M1 trips by non-residents |
+
 ### `pressure_components` (derived)
 
 Long format, so new components can be added without a schema change.
@@ -886,6 +1004,22 @@ Load factor per stop and line: people passing / (vehicles x capacity).
 | `capacity_daily` | float64 | departures x vehicle capacity |
 | `ratio_daily` | float64 |  |
 | `ratio_peak_hour` | float64, nullable | same ratio in the busiest hour |
+
+### `transit_load` (derived)
+
+Barri-level load index (prisa.saturation.transit_load): ranks days, not a measured occupancy.
+
+| column | type | notes |
+|---|---|---|
+| `day` (key) | datetime64[ns] |  |
+| `zone_id` (key) | string |  |
+| `standing_density` (key) | float64 | people per m2 assumed for capacity: 4 or 6 |
+| `demand` | float64 | estimated public-transport boardings in the barri |
+| `places` | float64 | places offered by departures from the barri's stops |
+| `peak_demand` | float64 |  |
+| `peak_places` | float64 |  |
+| `ratio_daily` | float64 |  |
+| `ratio_peak_hour` | float64 |  |
 
 ### `model_runs` (derived)
 
@@ -947,6 +1081,7 @@ One discount per day for everyone. Product prices = base price x (1 - discount).
 | `day` (key) | datetime64[ns] |  |
 | `expected_pressure` | float64 | city-level forecast the discount is set from |
 | `discount` | float64 | 0-1, continuous; discretise into tiers for display only |
+| `tier` | string, nullable | display level: Muy baja / Baja / Media / Alta / Muy alta |
 
 ### `scenarios` (derived)
 

@@ -64,12 +64,17 @@ def _snapshot_time(path: Path) -> datetime:
 
 
 def parse_fgc(path: Path) -> list[dict]:
-    """Rows for `occupancy_observations` from one FGC snapshot."""
+    """Rows for `occupancy_observations` from one FGC snapshot (observed_at in UTC)."""
     observed_at = _snapshot_time(path)
     rows = []
     for r in json.loads(gzip.decompress(path.read_bytes()))["results"]:
-        cars = [r.get(f"ocupacio_{c}_percent") for c in ("mi", "ri", "m1", "m2")]
-        cars = [float(c) for c in cars if c not in (None, "")]
+        if not r.get("lin") or not r.get("ut"):
+            continue  # the feed occasionally sends a record with its fields shifted (seen at night)
+        try:
+            cars = [float(c) for c in (r.get(f"ocupacio_{k}_percent") for k in ("mi", "ri", "m1", "m2"))
+                    if c not in (None, "")]  # fmt: skip
+        except (TypeError, ValueError):
+            continue
         if not cars:
             continue
         next_stops = (r.get("properes_parades") or "").split(";")

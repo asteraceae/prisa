@@ -12,14 +12,12 @@ import json
 import sys
 
 import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from shapely import wkt
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-from shapely import wkt  # noqa: E402
-
-from prisa import forecast, geo, pressure, pricing, store  # noqa: E402
+from prisa import forecast, geo, pressure, pricing, store
 
 FIG_DIR = store.OUTPUTS / "figures"
 SEGMENT_COLOURS = {"international": "#1f5c7a", "national": "#7fa7bf", "regional": "#c79a1e"}
@@ -173,6 +171,7 @@ def build() -> list[str]:
 
 
 def main() -> int:
+    matplotlib.use("Agg")  # files only; notebooks keep their inline backend
     for name in build():
         print(FIG_DIR / name)
     return 0

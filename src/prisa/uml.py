@@ -6,21 +6,25 @@ The tables come from prisa.schemas; only the relationships are listed here.
 from __future__ import annotations
 
 from prisa import schemas as s
+from prisa.external import geography, mitma, ridership, transit
 
 GROUPS = {
-    "Geography and hotspots": [s.ZONES, s.DISTRICTS, s.ZONE_POPULATION, s.ZONE_ACCOMMODATION, s.HOTSPOTS],
+    "Geography and hotspots": [
+        s.ZONES, s.DISTRICTS, s.ZONE_POPULATION, s.ZONE_ACCOMMODATION, s.HOTSPOTS, geography.BARRI_GEOMETRY,
+    ],
     "Transport network (supply)": [
-        s.ZONES, s.STATIONS, s.LINES, s.LINE_STOPS, s.VEHICLE_TYPES, s.SERVICE_DAILY, s.MODE_SHARE,
+        s.ZONES, s.STATIONS, s.LINES, s.LINE_STOPS, s.VEHICLE_TYPES, transit.SERVICE_BY_DAYTYPE, s.SERVICE_DAILY,
+        s.MODE_SHARE,
     ],
     "Calendar and context": [s.CALENDAR_DAYS, s.EVENTS, s.WEATHER_DAILY, s.ZONES],
     "Observed demand": [
         s.ZONES, s.CALENDAR_DAYS, s.TRIP_FLOWS, s.PRESENCE_DAILY, s.PRESENCE_MONTHLY,
         s.OVERNIGHT_STAYS, s.VISITOR_ORIGIN, s.VISITOR_PROFILE, s.RIDERSHIP, s.OCCUPANCY_OBSERVATIONS,
-        s.EXTERNAL_FLOWS, s.ZONE_CROSSWALK,
+        ridership.OCCUPANCY_HOURLY, s.EXTERNAL_FLOWS, s.ZONE_CROSSWALK, mitma.HOURLY_PROFILE,
     ],
-    "Pressure, saturation and forecasts": [
-        s.ZONES, s.TRIP_FLOWS, s.PRESENCE_DAILY, s.SERVICE_DAILY, s.PRESSURE_COMPONENTS,
-        s.PRESSURE_INDEX, s.SATURATION, s.MODEL_RUNS, s.FORECASTS,
+    "Daily summaries, pressure, saturation and forecasts": [
+        s.ZONES, s.TRIP_FLOWS, s.PRESENCE_DAILY, s.BARRI_DAY, s.CITY_DAY, transit.SERVICE_BY_DAYTYPE,
+        s.TRANSIT_LOAD, s.PRESSURE_COMPONENTS, s.PRESSURE_INDEX, s.MODEL_RUNS, s.FORECASTS,
     ],
     "Pricing and simulation": [
         s.FORECASTS, s.FARE_PRODUCTS, s.FARE_CALENDARS, s.DAILY_FARES, s.SCENARIOS, s.SIMULATION_RESULTS,
@@ -51,8 +55,20 @@ RELATIONS = [
     ("zones", "1", "visitor_profile", "*", ""),
     ("zones", "1", "zone_crosswalk", "*", "maps"),
     ("zone_crosswalk", "*", "external_flows", "*", "re-zones"),
-    ("trip_flows", "*", "pressure_components", "*", "inbound, anomaly"),
-    ("presence_daily", "*", "pressure_components", "*", "visitor density"),
+    ("trip_flows", "*", "barri_day", "*", "M1 + M3"),
+    ("presence_daily", "*", "barri_day", "*", "T5"),
+    ("trip_flows", "*", "city_day", "*", "M1, M2"),
+    ("presence_daily", "*", "city_day", "*", "T2"),
+    ("barri_day", "*", "pressure_components", "*", "density, arrivals, anomaly"),
+    ("barri_day", "*", "transit_load", "*", "boardings"),
+    ("service_by_daytype", "*", "transit_load", "*", "places"),
+    ("transit_load", "*", "pressure_components", "*", "transit load"),
+    ("barri_day", "*", "model_runs", "*", "training data"),
+    ("city_day", "*", "model_runs", "*", "training data"),
+    ("zones", "1", "barri_geometry", "1", "boundary"),
+    ("lines", "1", "service_by_daytype", "*", "departures"),
+    ("occupancy_observations", "*", "occupancy_hourly", "*", "summarised"),
+    ("occupancy_hourly", "*", "transit_load", "*", "calibrates"),
     ("trip_flows", "*", "saturation", "*", "demand"),
     ("mode_share", "*", "saturation", "*", "splits demand"),
     ("ridership", "*", "saturation", "*", "calibrates"),
