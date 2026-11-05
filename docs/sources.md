@@ -27,8 +27,10 @@ Really the first one is the most important as it has the same grain as the telef
 | Informe de l'activitat turística 2024 | Observatori del Turisme a Barcelona | https://ajuntament.barcelona.cat/turisme/sites/default/files/2026-03/2024_IAT_OTB_1.pdf | visitors per attraction; hotel places per district | 1994–2024 | not stated |
 
 Barri codes: the official number runs 01–73 across the whole city (la
-Barceloneta 03, el Fort Pienc 05). Telefónica's code is 8019 + district + two
-digits; whether those two digits are the city-wide number or restart per
+Barceloneta 03, el Fort Pienc 05). Telefónica's real code is 9 digits,
+08019 + district + position *within* the district (el Bon Pastor is 080190903,
+officially 59). `data/reference/barri_crosswalk.csv` maps one to the other and
+was checked by name against all 73 barris in the delivery.
 
 ## Transport supply
 
@@ -38,10 +40,11 @@ The top one is exactly what we were looking for, it only needs attribution to it
 |---|---|---|---|
 | ATM GTFS, all operators in Catalonia (best single source) | ATM via the ministry's national access point (NAP) | https://nap.transportes.gob.es/api/Fichero/download/2060 (registration/API key) | Ministry open licence, commercial OK, "Powered by MITRAMS" |
 | TMB GTFS + iBus/iMetro real time | TMB | https://developer.tmb.cat (app_id/app_key) | TMB API terms: only for the app you declare |
+| TMB GTFS, public mirror (what we use) | Mobility Database (mdb-2359), copy of TMB's official feed | https://mobilitydatabase.org/feeds/gtfs/mdb-2359 | TMB developer terms still apply: don't redistribute the raw feed |
 | FGC GTFS + GTFS-RT | FGC | https://www.fgc.cat/google/google_transit.zip | CC BY 4.0 |
 | Rodalies GTFS / GTFS-RT | Renfe | https://ssl.renfe.com/ftransit/Fichero_CER_FOMENTO/fomento_transit.zip; https://gtfsrt.renfe.com/ | commercial OK, attribution |
-| TRAM GTFS | TRAM | https://opendata.tram.cat/GTFS/zip/TBX.zip, TBS.zip | unverified |
-| AMB bus GTFS | AMB | https://www.ambmobilitat.cat/OpenData/google_transit.zip | unverified |
+| TRAM GTFS | TRAM | https://opendata.tram.cat/GTFS/zip/TBX.zip, TBS.zip | unverified: the portal only links generic terms of use |
+| AMB bus GTFS | AMB | https://www.ambmobilitat.cat/OpenData/google_transit.zip | not stated for the static file; AMB's GTFS-RT says reuse under Llei 37/2007 (attribution + date), probably the same |
 | Bus stops, funiculars, cable cars | Open Data BCN | https://opendata-ajuntament.barcelona.cat | CC BY 4.0 |
 
 Vehicle capacities are in `data/reference/vehicle_types.csv` with a source per row.
@@ -82,24 +85,26 @@ Mar 2024). Pass woulfn't pay for our ticket so the price only affects pay-per-tr
 
 | Dataset | Publisher | Notes | Licence |
 |---|---|---|---|
-| Local holidays of Catalonia (b4eh-r8up) | Generalitat | per municipality; 2027 not loaded yet | Generalitat open licence |
+| Local holidays of Catalonia (b4eh-r8up) | Generalitat | per municipality; contains junk rows; 2027 not loaded yet, so 17 May and 24 Sep 2027 are assumed (betevé reports 17 May was chosen) | Generalitat open licence |
 | Catalan holidays 2027 (Ordre EMT/52/2026) | Generalitat | 1 Jan, 6 Jan, 26 Mar, 29 Mar, 1 May, 24 Jun, 11 Sep, 12 Oct, 1 Nov, 6 Dec, 8 Dec, 25 Dec. Barcelona local holidays for 2027 not published yet | – |
 | School calendar 2026-27 (Ordre EDF/66/2026) | Generalitat | 8 Sep 2026 – 21 Jun 2027; Christmas 22 Dec – 7 Jan; Easter 20–29 Mar | – |
 | Concerts at large venues `recintes-gran-aforament` | Open Data BCN | 2023–2025 | CC BY 4.0 |
-| Weather | AEMET OpenData, Meteocat | daily | – | to check |
+| Weather (what we use) | Open-Meteo historical archive (ERA5), Barcelona grid cell | daily, 2023 to now | CC BY 4.0 data, but the free API is **non-commercial**; a commercial product would need AEMET or a paid plan |
+| Football fixtures | openfootball/football.json | FC Barcelona LaLiga home matches 2023–2027 | public domain |
+| Hand-curated events | `data/reference/events.csv` | 64 events (MWC, Primavera, Mercè, marathon...), one source URL per row | – |
 
 Known 2027 events: MWC 1–4 Mar (Fira Gran Via, L'Hospitalet), Primavera Sound
-2/3–6 Jun (Parc del Fòrum). No open consolidated events dataset exists; build
-`events` by hand from the sources above.
+2/3–6 Jun (Parc del Fòrum). No open consolidated events dataset seems to exist, we would have to build one by hand if we wanted to be robust.
 
-## Things that will shift 2027 away from the 2023–2025 pattern
+## Diff between 2027 and the 2023-2025 period
 
 - Methodology breaks: MITMA on 1 Jul 2025; INE inbound tourism moving into FRONTUR.
+
 - Tourist-flat licences being phased out by Nov 2028 (unverified), and higher
   tourist-tax surcharges.
 - Spotify Camp Nou capacity going up in phases after it reopened in Nov 2025.
 - Gaudí centenary and the Sagrada Família towers (2026) inflate the baseline.
-- Timed-ticket caps at Sagrada Família and Park Güell limit how far those sites can grow.
+- Timed-ticket caps at Sagrada Família and Park Güell limit how far those sites can grow, we can work backward from this to find the # visitors.
 
 ## Mode share (`data/reference/mode_share.csv`)
 
@@ -113,5 +118,14 @@ None of these documents states a licence; cite them as official statistics.
 | Perfil i hàbits dels turistes a Barcelona 2024 (OTB, Apr 2025) | Main mode of tourists: walk 44.7, metro 28.1, taxi 13.4, bus 5.6, Uber/Cabify 2.3 | https://ajuntament.barcelona.cat/turisme/sites/default/files/2025-04/Informe%20enquesta%20perfil%20turistes%20Barcelona%20ciutat%202024.pdf |
 | Estratègia de mobilitat turística, Mesura de Govern (Nov 2017) | 2016 tourist trips by mode; tourists ≈15% of metro users (196k trips/day); ticket mix of tourists' trips | https://ajuntament.barcelona.cat/turisme/sites/default/files/mesura_de_govern_mobilitat.pdf |
 
-Gaps: no weekend survey exists (EMEF is weekdays only); no mode-by-distance
-table; the Nacional column is entirely our assumption.
+## What the pipeline uses (Nov 2026)
+
+| Module | Sources | Commercial use |
+|---|---|---|
+| `prisa.ingest` | Telefónica delivery | **no** (NDA, challenge only) |
+| `prisa.external.geography` | Open Data BCN barris, padró, tourist flats; AMB municipality list | yes, attribution "Ajuntament de Barcelona" |
+| `prisa.external.calendar` | `holidays` library (MIT), Generalitat local holidays, DOGC school orders, Open-Meteo, openfootball, events.csv | yes except Open-Meteo's free API |
+| `prisa.external.transit` | TMB GTFS (Mobility Database mirror), FGC, Renfe, TRAM, AMB | FGC/Renfe yes; TMB developer terms; TRAM/AMB unverified |
+| `prisa.external.ridership` | TMB ridership spreadsheets, FGC monthly demand, Renfe 2018 slots, our FGC Geotren archive | TMB **no** (calibration only); others yes |
+| `prisa.external.mitma` | MITMA big-data mobility (hourly, districts) | yes, "Basado en datos abiertos MITMA" |
+| `data/reference/mode_share.csv` | EMEF 2024, PMU 2030 slides, OTB tourist survey | cite as official statistics |

@@ -227,23 +227,24 @@ def transit_load(barri_day: pd.DataFrame, calendar_days: pd.DataFrame, service: 
 
 
 def peak_shares() -> dict[str, float]:
-    """Busiest hour's share of daily demand per day type: MITMA hourly profile if built, else Renfe 2018."""
+    """Busiest hour's share of daily trips per day type.
+
+    MITMA's city-wide profile for all travellers (hourly OD, Spanish residents,
+    sampled weeks 2023-2025) when built; else Renfe's 2018 Rodalies profile
+    for Barcelona stations, which is commuter-heavy and peakier.
+    """
     from prisa import store
 
-    for name, scope_filter in (("hourly_profile_mitma", None), ("hourly_profile_ridership", "rodalies_bcn_stations")):
-        path = store.PROCESSED / f"{name}.parquet"
-        if not path.exists():
-            continue
-        h = pd.read_parquet(path)
-        if scope_filter is not None:
-            h = h[h["scope"] == scope_filter]
-        elif "district_code" in h:
-            h = h[h["district_code"].isna()] if h["district_code"].isna().any() else h
-        if "traveller" in h:
-            h = h.groupby(["day_type", "hour"], as_index=False)["share"].mean()
-        peak = h.groupby("day_type")["share"].max().to_dict()
-        weekday = peak.get("weekday")
-        return {t: peak.get(t, weekday) for t in ("weekday", "saturday", "sunday_holiday")}
+    mitma = store.PROCESSED / "peak_share_mitma.parquet"
+    if mitma.exists():
+        p = pd.read_parquet(mitma)
+        p = p[(p["scope"] == "city") & (p["traveller"] == "all")]
+        return p.set_index("day_type")["peak_share"].astype(float).to_dict()
+    renfe = store.PROCESSED / "hourly_profile_ridership.parquet"
+    if renfe.exists():
+        h = pd.read_parquet(renfe)
+        weekday = float(h[h["scope"] == "rodalies_bcn_stations"]["share"].max())
+        return {t: weekday for t in ("weekday", "saturday", "sunday_holiday")}
     raise FileNotFoundError("no hourly profile built yet")
 
 

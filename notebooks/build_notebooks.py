@@ -198,6 +198,8 @@ def write() -> list[Path]:
     for name, cells in NOTEBOOKS.items():
         nb = nbf.v4.new_notebook()
         nb.cells = [nbf.v4.new_markdown_cell(src) if kind == "md" else nbf.v4.new_code_cell(src) for kind, src in cells]
+        for i, cell in enumerate(nb.cells):
+            cell["id"] = f"{name}-{i:02d}"  # stable ids keep git diffs to real changes
         nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
         path = HERE / f"{name}.ipynb"
         nbf.write(nb, path)
