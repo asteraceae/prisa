@@ -15,3 +15,6 @@ data/processed/*
 
 # Confidential Telefónica delivery (NDA): never commit
 data/real/
+
+# Figures and executed notebooks are derived from the confidential data
+outputs/

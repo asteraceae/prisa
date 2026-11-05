@@ -1,0 +1,74 @@
+zone_id,barri_number,barri_name,district_code,district_name
+080190101,1,el Raval,1,Ciutat Vella
+080190102,2,el Barri Gòtic,1,Ciutat Vella
+080190103,3,la Barceloneta,1,Ciutat Vella
+080190104,4,"Sant Pere, Santa Caterina i la Ribera",1,Ciutat Vella
+080190201,5,el Fort Pienc,2,Eixample
+080190202,6,la Sagrada Família,2,Eixample
+080190203,7,la Dreta de l'Eixample,2,Eixample
+080190204,8,l'Antiga Esquerra de l'Eixample,2,Eixample
+080190205,9,la Nova Esquerra de l'Eixample,2,Eixample
+080190206,10,Sant Antoni,2,Eixample
+080190301,11,el Poble-sec,3,Sants-Montjuïc
+080190302,12,la Marina del Prat Vermell,3,Sants-Montjuïc
+080190303,13,la Marina de Port,3,Sants-Montjuïc
+080190304,14,la Font de la Guatlla,3,Sants-Montjuïc
+080190305,15,Hostafrancs,3,Sants-Montjuïc
+080190306,16,la Bordeta,3,Sants-Montjuïc
+080190307,17,Sants - Badal,3,Sants-Montjuïc
+080190308,18,Sants,3,Sants-Montjuïc
+080190401,19,les Corts,4,Les Corts
+080190402,20,la Maternitat i Sant Ramon,4,Les Corts
+080190403,21,Pedralbes,4,Les Corts
+080190501,22,"Vallvidrera, el Tibidabo i les Planes",5,Sarrià-Sant Gervasi
+080190502,23,Sarrià,5,Sarrià-Sant Gervasi
+080190503,24,les Tres Torres,5,Sarrià-Sant Gervasi
+080190504,25,Sant Gervasi - la Bonanova,5,Sarrià-Sant Gervasi
+080190505,26,Sant Gervasi - Galvany,5,Sarrià-Sant Gervasi
+080190506,27,el Putxet i el Farró,5,Sarrià-Sant Gervasi
+080190601,28,Vallcarca i els Penitents,6,Gràcia
+080190602,29,el Coll,6,Gràcia
+080190603,30,la Salut,6,Gràcia
+080190604,31,la Vila de Gràcia,6,Gràcia
+080190605,32,el Camp d'en Grassot i Gràcia Nova,6,Gràcia
+080190701,33,el Baix Guinardó,7,Horta-Guinardó
+080190702,34,Can Baró,7,Horta-Guinardó
+080190703,35,el Guinardó,7,Horta-Guinardó
+080190704,36,la Font d'en Fargues,7,Horta-Guinardó
+080190705,37,el Carmel,7,Horta-Guinardó
+080190706,38,la Teixonera,7,Horta-Guinardó
+080190707,39,Sant Genís dels Agudells,7,Horta-Guinardó
+080190708,40,Montbau,7,Horta-Guinardó
+080190709,41,la Vall d'Hebron,7,Horta-Guinardó
+080190710,42,la Clota,7,Horta-Guinardó
+080190711,43,Horta,7,Horta-Guinardó
+080190801,44,Vilapicina i la Torre Llobeta,8,Nou Barris
+080190802,45,Porta,8,Nou Barris
+080190803,46,el Turó de la Peira,8,Nou Barris
+080190804,47,Can Peguera,8,Nou Barris
+080190805,48,la Guineueta,8,Nou Barris
+080190806,49,Canyelles,8,Nou Barris
+080190807,50,les Roquetes,8,Nou Barris
+080190808,51,Verdun,8,Nou Barris
+080190809,52,la Prosperitat,8,Nou Barris
+080190810,53,la Trinitat Nova,8,Nou Barris
+080190811,54,Torre Baró,8,Nou Barris
+080190812,55,Ciutat Meridiana,8,Nou Barris
+080190813,56,Vallbona,8,Nou Barris
+080190901,57,la Trinitat Vella,9,Sant Andreu
+080190902,58,Baró de Viver,9,Sant Andreu
+080190903,59,el Bon Pastor,9,Sant Andreu
+080190904,60,Sant Andreu,9,Sant Andreu
+080190905,61,la Sagrera,9,Sant Andreu
+080190906,62,el Congrés i els Indians,9,Sant Andreu
+080190907,63,Navas,9,Sant Andreu
+080191001,64,el Camp de l'Arpa del Clot,10,Sant Martí
+080191002,65,el Clot,10,Sant Martí
+080191003,66,el Parc i la Llacuna del Poblenou,10,Sant Martí
+080191004,67,la Vila Olímpica del Poblenou,10,Sant Martí
+080191005,68,el Poblenou,10,Sant Martí
+080191006,69,Diagonal Mar i el Front Marítim del Poblenou,10,Sant Martí
+080191007,70,el Besòs i el Maresme,10,Sant Martí
+080191008,71,Provençals del Poblenou,10,Sant Martí
+080191009,72,Sant Martí de Provençals,10,Sant Martí
+080191010,73,la Verneda i la Pau,10,Sant Martí

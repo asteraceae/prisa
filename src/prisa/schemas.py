@@ -83,7 +83,7 @@ ZONES = Table(
     "dimension",
     ("zone_id",),
     (
-        C("zone_id", STR, "8-digit barri code (80190103) or 5-digit INE municipality code (08019)"),
+        C("zone_id", STR, "9-digit barri code (080190103) or 5-digit INE municipality code (08019)"),
         C("level", STR, enum=ZoneLevel),
         C("name", STR),
         C("municipality_code", STR, "5-digit INE code, leading zero kept"),
@@ -137,7 +137,7 @@ HOTSPOTS = Table(
         C("name", STR),
         C("type", STR, enum=HotspotType),
         C("barri_number", INT, "official 1-73; null for city-wide (Bus Turístic)", nullable=True),
-        C("zone_id", STR, "resolved from barri_number once Telefónica's numbering is confirmed", nullable=True),
+        C("zone_id", STR, "resolved from barri_number via data/reference/barri_crosswalk.csv", nullable=True),
         C("lat", FLOAT, nullable=True),
         C("lon", FLOAT, nullable=True),
         C("annual_visitors", INT, nullable=True),
@@ -489,6 +489,54 @@ ZONE_CROSSWALK = Table(
 # Derived: pressure, saturation, forecasts
 # --------------------------------------------------------------------------
 
+# Daily summaries every analysis starts from (built by prisa.features in DuckDB).
+# trips_* come from mobility (M1 barri<->barri plus M3 barri<->municipality, never
+# M2); visitors_* from tourism T5/T2 (unique people, no residents).
+
+_SEG_TRIPS = tuple(
+    C(f"trips_in_{seg.value}", FLOAT, f"trips arriving from {seg.value} travellers")
+    for seg in Segment
+)
+
+BARRI_DAY = Table(
+    "barri_day",
+    "derived",
+    ("day", "zone_id"),
+    (
+        C("day", DATE),
+        C("zone_id", STR),
+        C("trips_in", FLOAT, "trips ending in the barri, from other barris or municipalities"),
+        *_SEG_TRIPS,
+        C("trips_out", FLOAT, "trips starting in the barri"),
+        C("visitors", FLOAT, "non-resident unique visitors present (T5)", nullable=True),
+        C("visitors_international", FLOAT, nullable=True),
+        C("visitors_national", FLOAT, nullable=True),
+        C("visitors_regional", FLOAT, nullable=True),
+        C("tourists", FLOAT, "stayed at least one night", nullable=True),
+        C("day_trippers", FLOAT, nullable=True),
+    ),
+    "One row per barri per day, Jan 2023 - Aug 2025.",
+)
+
+CITY_DAY = Table(
+    "city_day",
+    "derived",
+    ("day",),
+    (
+        C("day", DATE),
+        C("visitors", FLOAT, "non-resident unique visitors in Barcelona (T2)"),
+        C("visitors_international", FLOAT),
+        C("visitors_national", FLOAT),
+        C("visitors_regional", FLOAT),
+        C("tourists", FLOAT),
+        C("day_trippers", FLOAT),
+        C("trips_internal", FLOAT, "barri -> barri trips inside Barcelona (M1)"),
+        C("trips_into_city", FLOAT, "trips from other municipalities into Barcelona (M2)"),
+        C("trips_out_of_city", FLOAT, "trips from Barcelona to other municipalities (M2)"),
+        C("trips_internal_visitor", FLOAT, "M1 trips by non-residents"),
+    ),
+)
+
 PRESSURE_COMPONENTS = Table(
     "pressure_components",
     "derived",
@@ -532,6 +580,24 @@ SATURATION = Table(
         C("ratio_peak_hour", FLOAT, "same ratio in the busiest hour", nullable=True),
     ),
     "Load factor per stop and line: people passing / (vehicles x capacity).",
+)
+
+TRANSIT_LOAD = Table(
+    "transit_load",
+    "derived",
+    ("day", "zone_id", "standing_density"),
+    (
+        C("day", DATE),
+        C("zone_id", STR),
+        C("standing_density", FLOAT, "people per m2 assumed for capacity: 4 or 6"),
+        C("demand", FLOAT, "estimated public-transport boardings in the barri"),
+        C("places", FLOAT, "places offered by departures from the barri's stops"),
+        C("peak_demand", FLOAT),
+        C("peak_places", FLOAT),
+        C("ratio_daily", FLOAT),
+        C("ratio_peak_hour", FLOAT),
+    ),
+    "Barri-level load index (prisa.saturation.transit_load): ranks days, not a measured occupancy.",
 )
 
 MODEL_RUNS = Table(
@@ -609,6 +675,7 @@ DAILY_FARES = Table(
         C("day", DATE),
         C("expected_pressure", FLOAT, "city-level forecast the discount is set from"),
         C("discount", FLOAT, "0-1, continuous; discretise into tiers for display only"),
+        C("tier", STR, "display level: Muy baja / Baja / Media / Alta / Muy alta", nullable=True),
     ),
     "One discount per day for everyone. Product prices = base price x (1 - discount).",
 )
@@ -652,7 +719,7 @@ TABLES: dict[str, Table] = {
         CALENDAR_DAYS, EVENTS, WEATHER_DAILY,
         TRIP_FLOWS, PRESENCE_DAILY, PRESENCE_MONTHLY, OVERNIGHT_STAYS, VISITOR_ORIGIN, VISITOR_PROFILE,
         RIDERSHIP, OCCUPANCY_OBSERVATIONS, EXTERNAL_FLOWS, ZONE_CROSSWALK,
-        PRESSURE_COMPONENTS, PRESSURE_INDEX, SATURATION, MODEL_RUNS, FORECASTS,
+        BARRI_DAY, CITY_DAY, PRESSURE_COMPONENTS, PRESSURE_INDEX, SATURATION, TRANSIT_LOAD, MODEL_RUNS, FORECASTS,
         FARE_PRODUCTS, FARE_CALENDARS, DAILY_FARES, SCENARIOS, SIMULATION_RESULTS,
     )
 }  # fmt: skip

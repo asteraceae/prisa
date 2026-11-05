@@ -21,6 +21,7 @@ from __future__ import annotations
 import pandas as pd
 
 from prisa import schemas
+from prisa.pressure import tier
 
 POLICIES = ("one_price_for_all", "registered_residents_capped")
 
@@ -41,6 +42,7 @@ def build_calendar(expected_pressure: pd.DataFrame, calendar_id: str, max_discou
     """`expected_pressure` has columns day, expected_pressure (city level, 0-1)."""
     out = expected_pressure[["day", "expected_pressure"]].copy()
     out["discount"] = discount_curve(out["expected_pressure"], max_discount, **curve)
+    out["tier"] = tier(out["expected_pressure"])
     out.insert(0, "calendar_id", pd.Series(calendar_id, index=out.index, dtype="string"))
     return schemas.check(out[schemas.DAILY_FARES.column_names], schemas.DAILY_FARES)
 

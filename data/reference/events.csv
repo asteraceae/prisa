@@ -1,0 +1,68 @@
+event_id,name,type,start_day,end_day,barri_number,municipality_code,expected_attendance,source
+mwc_2023,MWC Barcelona 2023,congress,2023-02-27,2023-03-02,,08101,88500,https://convergedigest.com/mwc-barcelona-2023-attendance-88500/
+mwc_2024,MWC Barcelona 2024,congress,2024-02-26,2024-02-29,,08101,101000,https://www.gsma.com/newsroom/press-release/gsma-mwc-barcelona-2024-closes-with-over-101000-attendees/
+mwc_2025,MWC Barcelona 2025,congress,2025-03-03,2025-03-06,,08101,109000,https://www.mwcbarcelona.com/press
+mwc_2026,MWC Barcelona 2026,congress,2026-03-02,2026-03-05,,08101,105000,https://mobilenewscwp.co.uk/news/article/mwc-barcelona-2026-attracts-nearly-105000-attendees/
+mwc_2027,MWC Barcelona 2027,congress,2027-03-01,2027-03-04,,08101,,https://en.wikipedia.org/wiki/Mobile_World_Congress
+primavera_2023,Primavera Sound 2023,festival,2023-05-31,2023-06-03,70,08019,253000,https://en.wikipedia.org/wiki/Primavera_Sound
+primavera_2024,Primavera Sound 2024,festival,2024-05-29,2024-06-01,70,08019,268000,https://www.ondavasca.com/primavera-sound-registra-268-000-asistentes-y-preve-retorno-de-200-millones-para-barcelona/
+primavera_2025,Primavera Sound 2025,festival,2025-06-04,2025-06-07,70,08019,293000,https://catalannews.com/culture/item/primavera-sound-barcelona-attendance-record-7-june-2025
+primavera_2026,Primavera Sound 2026,festival,2026-06-04,2026-06-06,70,08019,287000,https://www.eldebate.com/cultura/20260607/primavera-sound-cierra-24-edicion-287000-asistentes-aparicion-sorpresa-pedro-sanchez_426044.html
+primavera_2027,Primavera Sound 2027,festival,2027-06-02,2027-06-06,70,08019,,https://www.thefader.com/2026/10/05/primavera-sound-barcelona-2027-lineup-ticket-details-doechii-caroline-polachek-phoebe-bridgers
+sonar_2023,Sónar 2023 (by Day at Fira Montjuïc; by Night at Fira Gran Via),festival,2023-06-15,2023-06-17,11,08019,121000,https://www.eldebate.com/cultura/musica/20230622/sonar-supera-expectativas-aniversario-pone-rumbo-otras-30-ediciones_123371.html
+sonar_2024,Sónar 2024 (by Day at Fira Montjuïc; by Night at Fira Gran Via),festival,2024-06-13,2024-06-15,11,08019,120000,https://es.ara.cat/cultura/festivales/sonar-reivindica-barcelona-capital-cultura-digital_1_5062108.html
+sonar_2025,Sónar 2025 (by Day at Fira Montjuïc; by Night at Fira Gran Via),festival,2025-06-12,2025-06-14,11,08019,,https://en.wikipedia.org/wiki/S%C3%B3nar
+sonar_2026,Sónar 2026 (single site at Fira Gran Via),festival,2026-06-18,2026-06-20,,08101,,https://www.catalannews.com/things-to-do/item/the-prodigy-charlotte-de-witte-amelie-lens-full-sonar-2026-lineup-announced
+cruilla_2023,Cruïlla 2023,festival,2023-07-05,2023-07-08,70,08019,,https://www.cruillabarcelona.cat/en/?p=50076
+cruilla_2024,Cruïlla 2024,festival,2024-07-10,2024-07-13,70,08019,,https://www.catalannews.com/culture/item/pet-shop-boys-kasabian-and-the-kooks-added-to-cruilla-2024-lineup
+cruilla_2025,Cruïlla 2025,festival,2025-07-09,2025-07-12,70,08019,82000,https://naciodigital.cat/next/entreteniment/el-cruilla-tanca-ledicio-del-2026-amb-73000-assistents-i-reivindica-un-model-de-qualitat-per-sobre-de-la-quantitat.html
+cruilla_2026,Cruïlla 2026,festival,2026-07-08,2026-07-11,70,08019,73000,https://beteve.cat/cultura/festival-cruilla-tanca-edicio-2026-73000-assistents/
+merce_2023,Festes de la Mercè 2023,city_festival,2023-09-22,2023-09-25,,08019,1000000,https://ajuntament.barcelona.cat/premsa/wp-content/uploads/2023/09/Nota-Merce-2023-OK-1-2.pdf
+merce_2024,Festes de la Mercè 2024,city_festival,2024-09-20,2024-09-24,,08019,,https://barcelona.cat/lamerce/sites/default/files/2024-09/merce24_programagraella_1.pdf
+merce_2025,Festes de la Mercè 2025,city_festival,2025-09-23,2025-09-28,,08019,,https://www.barcelona.cat/lamerce/en/noticies/1555282
+merce_2026,Festes de la Mercè 2026,city_festival,2026-09-23,2026-09-27,,08019,,https://www.idealista.com/en/news/lifestyle-in-spain/2026/09/18/913352-merce-festival-2026-dates-programme-and-concert-highlights
+merce_2027,Festes de la Mercè 2027 (assumed dates around 24 Sep),city_festival,2027-09-23,2027-09-26,,08019,,https://www.barcelona.cat/lamerce/
+gracia_2023,Festa Major de Gràcia 2023,city_festival,2023-08-15,2023-08-21,31,08019,,https://agenda500.barcelona.cat/en/detall/dates-de-festa-major_1298113457.html
+gracia_2024,Festa Major de Gràcia 2024,city_festival,2024-08-15,2024-08-21,31,08019,,https://agenda500.barcelona.cat/en/detall/dates-de-festa-major_1298113457.html
+gracia_2025,Festa Major de Gràcia 2025,city_festival,2025-08-15,2025-08-21,31,08019,,https://agenda500.barcelona.cat/en/detall/dates-de-festa-major_1298113457.html
+gracia_2026,Festa Major de Gràcia 2026,city_festival,2026-08-15,2026-08-21,31,08019,,https://agenda500.barcelona.cat/en/detall/dates-de-festa-major_1298113457.html
+gracia_2027,Festa Major de Gràcia 2027 (assumed usual 15-21 Aug),city_festival,2027-08-15,2027-08-21,31,08019,,https://agenda500.barcelona.cat/en/detall/dates-de-festa-major_1298113457.html
+santjordi_2023,Sant Jordi 2023,city_festival,2023-04-23,2023-04-23,,08019,,https://en.wikipedia.org/wiki/Saint_George%27s_Day_in_Catalonia
+santjordi_2024,Sant Jordi 2024,city_festival,2024-04-23,2024-04-23,,08019,,https://en.wikipedia.org/wiki/Saint_George%27s_Day_in_Catalonia
+santjordi_2025,Sant Jordi 2025,city_festival,2025-04-23,2025-04-23,,08019,,https://en.wikipedia.org/wiki/Saint_George%27s_Day_in_Catalonia
+santjordi_2026,Sant Jordi 2026,city_festival,2026-04-23,2026-04-23,,08019,,https://en.wikipedia.org/wiki/Saint_George%27s_Day_in_Catalonia
+santjordi_2027,Sant Jordi 2027,city_festival,2027-04-23,2027-04-23,,08019,,https://en.wikipedia.org/wiki/Saint_George%27s_Day_in_Catalonia
+santjoan_2023,Revetlla de Sant Joan 2023 (night of 23 Jun),city_festival,2023-06-23,2023-06-24,,08019,,https://en.wikipedia.org/wiki/Saint_John%27s_Eve
+santjoan_2024,Revetlla de Sant Joan 2024 (night of 23 Jun),city_festival,2024-06-23,2024-06-24,,08019,,https://en.wikipedia.org/wiki/Saint_John%27s_Eve
+santjoan_2025,Revetlla de Sant Joan 2025 (night of 23 Jun),city_festival,2025-06-23,2025-06-24,,08019,,https://en.wikipedia.org/wiki/Saint_John%27s_Eve
+santjoan_2026,Revetlla de Sant Joan 2026 (night of 23 Jun),city_festival,2026-06-23,2026-06-24,,08019,,https://en.wikipedia.org/wiki/Saint_John%27s_Eve
+santjoan_2027,Revetlla de Sant Joan 2027 (night of 23 Jun),city_festival,2027-06-23,2027-06-24,,08019,,https://en.wikipedia.org/wiki/Saint_John%27s_Eve
+marathon_2023,Zurich Marató Barcelona 2023,sport,2023-03-19,2023-03-19,,08019,15127,https://zurichmaratobarcelona.es/en/tag/zmb-3/page/2
+marathon_2024,Zurich Marató Barcelona 2024,sport,2024-03-10,2024-03-10,,08019,20000,https://www.barcelona.cat/infobarcelona/en/dates-confirmed-for-the-zurich-marato-barcelona-and-the-edreams-mitja-marato-2024_1290932.html
+marathon_2025,Zurich Marató Barcelona 2025,sport,2025-03-16,2025-03-16,,08019,27000,https://zurichmaratobarcelona.es/en/?p=12111
+marathon_2026,Zurich Marató Barcelona 2026,sport,2026-03-15,2026-03-15,,08019,30000,https://zurichmaratobarcelona.es/en/2025/12/15/historic-record-zurich-marato-barcelona-surpasses-30000-registered-runners/
+marathon_2027,Zurich Marató Barcelona 2027,sport,2027-03-14,2027-03-14,,08019,,https://running.life/en/event/zurich-marato-barcelona
+f1_2023,Formula 1 Spanish Grand Prix 2023 (Circuit de Barcelona-Catalunya),sport,2023-06-02,2023-06-04,,08135,,https://en.wikipedia.org/wiki/Barcelona-Catalunya_Grand_Prix
+f1_2024,Formula 1 Spanish Grand Prix 2024 (Circuit de Barcelona-Catalunya),sport,2024-06-21,2024-06-23,,08135,,https://en.wikipedia.org/wiki/Barcelona-Catalunya_Grand_Prix
+f1_2025,Formula 1 Spanish Grand Prix 2025 (Circuit de Barcelona-Catalunya),sport,2025-05-30,2025-06-01,,08135,,https://en.wikipedia.org/wiki/Barcelona-Catalunya_Grand_Prix
+f1_2026,Formula 1 Barcelona-Catalunya Grand Prix 2026,sport,2026-06-12,2026-06-14,,08135,,https://en.wikipedia.org/wiki/Barcelona-Catalunya_Grand_Prix
+americas_cup_2024,Louis Vuitton 37th America's Cup (Port Vell to Port Olímpic),sport,2024-08-22,2024-10-19,3,08019,,https://www.barcelonaturisme.com/wv3/en/agenda/amp/18327/37-america-s-cup-barcelona.html
+tdf_2026,Tour de France 2026 Grand Départ (stage 1 TTT and stage 2 finish on Montjuïc),sport,2026-07-04,2026-07-05,,08019,,https://www.cyclingnews.com/news/2026-tour-de-france-to-start-with-team-time-trial-in-barcelona
+papal_visit_2026,Papal visit for the Gaudí centenary (vigil at Estadi Olímpic 9 Jun; Mass at Sagrada Família 10 Jun),other,2026-06-09,2026-06-10,6,08019,,https://www.catalannews.com/popes-visit/item/pope-leo-xiv-to-visit-sagrada-familia-and-montserrat-on-june-10
+eo_springsteen_20230428,Bruce Springsteen at Estadi Olímpic,concert,2023-04-28,2023-04-28,11,08019,,https://www.catalannews.com/bruce-springsteen-barcelona/item/bruce-springsteen-to-start-european-tour-in-barcelona-in-april-2023
+eo_springsteen_20230430,Bruce Springsteen at Estadi Olímpic,concert,2023-04-30,2023-04-30,11,08019,,https://english.vilaweb.cat/noticies/bruce-springsteen-announces-second-concert-in-barcelona/
+eo_coldplay_20230524,Coldplay at Estadi Olímpic,concert,2023-05-24,2023-05-24,11,08019,,https://estadiolimpic.barcelona/en/coldplay-conquers-barcelona
+eo_coldplay_20230525,Coldplay at Estadi Olímpic,concert,2023-05-25,2023-05-25,11,08019,,https://estadiolimpic.barcelona/en/coldplay-conquers-barcelona
+eo_coldplay_20230527,Coldplay at Estadi Olímpic,concert,2023-05-27,2023-05-27,11,08019,,https://estadiolimpic.barcelona/en/coldplay-conquers-barcelona
+eo_coldplay_20230528,Coldplay at Estadi Olímpic,concert,2023-05-28,2023-05-28,11,08019,,https://estadiolimpic.barcelona/en/coldplay-conquers-barcelona
+eo_beyonce_20230608,Beyoncé at Estadi Olímpic,concert,2023-06-08,2023-06-08,11,08019,,https://barcelonayellow.com/bcn-events/details/17-beyonce-concert-barcelona-tickets
+eo_rammstein_20240611,Rammstein at Estadi Olímpic,concert,2024-06-11,2024-06-11,11,08019,,https://bsmsa.cat/en/press_releases/concert-season-kicks-estadi-olimpic-lluis-companys-over-200000-expected-attend
+eo_springsteen_20240620,Bruce Springsteen at Estadi Olímpic,concert,2024-06-20,2024-06-20,11,08019,,https://bsmsa.cat/en/press_releases/concert-season-kicks-estadi-olimpic-lluis-companys-over-200000-expected-attend
+eo_springsteen_20240622,Bruce Springsteen at Estadi Olímpic,concert,2024-06-22,2024-06-22,11,08019,,https://bsmsa.cat/en/press_releases/concert-season-kicks-estadi-olimpic-lluis-companys-over-200000-expected-attend
+eo_estopa_20240710,Estopa at Estadi Olímpic,concert,2024-07-10,2024-07-10,11,08019,,https://bsmsa.cat/en/press_releases/concert-season-kicks-estadi-olimpic-lluis-companys-over-200000-expected-attend
+eo_gunsnroses_20250609,Guns N' Roses at Estadi Olímpic,concert,2025-06-09,2025-06-09,11,08019,,https://bsmsa.cat/en/press_releases/estadi-olimpic-lluis-companys-resumes-its-musical-line-consolidating-its-position
+eo_kendrick_20250730,Kendrick Lamar and SZA at Estadi Olímpic,concert,2025-07-30,2025-07-30,11,08019,,https://bsmsa.cat/en/press_releases/estadi-olimpic-lluis-companys-resumes-its-musical-line-consolidating-its-position
+eo_blackpink_20250809,Blackpink at Estadi Olímpic,concert,2025-08-09,2025-08-09,11,08019,,https://bsmsa.cat/en/press_releases/estadi-olimpic-lluis-companys-resumes-its-musical-line-consolidating-its-position
+eo_postmalone_20250912,Post Malone at Estadi Olímpic,concert,2025-09-12,2025-09-12,11,08019,,https://bsmsa.cat/en/press_releases/estadi-olimpic-lluis-companys-resumes-its-musical-line-consolidating-its-position
+eo_badbunny_20260522,Bad Bunny at Estadi Olímpic,concert,2026-05-22,2026-05-22,11,08019,,https://bsmsa.cat/en/press_releases/anella-olimpica-closes-out-record-breaking-2025-nearly-200-events-drew-more-24
+eo_badbunny_20260523,Bad Bunny at Estadi Olímpic,concert,2026-05-23,2026-05-23,11,08019,,https://bsmsa.cat/en/press_releases/anella-olimpica-closes-out-record-breaking-2025-nearly-200-events-drew-more-24
