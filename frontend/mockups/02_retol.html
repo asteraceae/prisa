@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRISA · Rètol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&display=swap">
+<style>
+  /* themes: every colour is a token; red always marks a deal (or white on the red theme) */
+  :root, [data-theme="grafit"] {
+    --bg: #2a2a2f; --panel: #34343a; --panel-ink: #f5f5f3; --panel-muted: #b0b0b8; --line: #4b4b52; --ink: #f5f5f3; --muted: #b0b0b8;
+    --red: #db2828; --top-bg: #000; --top-ink: #fff; --logo-bg: #db2828; --logo-ink: #fff; --chip: #34343a;
+    --sel-bg: #fff; --sel-ink: #000; --sel-muted: #4b4b52; --date-bg: #000; --date-ink: #fff; --date-muted: #b0b0b8;
+    --tag-bg: #db2828; --tag-ink: #fff; --best-bg: #db2828; --best-ink: #fff; --block-bg: #000; --block-ink: #fff;
+    --bar-full: #55555d; --today: #fff; --hover: rgba(255,255,255,.04); --focus: #fff; --hatch-ink: rgba(255,255,255,.16);
+    --t-muy-baja: #db2828; --t-baja: #a82428; --t-media: #6b2a2d; --t-alta: #44444b; --t-muy-alta: #44444b;
+    --c-muy-baja: #ff4d4d; --c-baja: #e0575b; --c-media: #b9686b; --c-full: #b0b0b8;
+  }
+  [data-theme="nit"] {
+    --bg: #1b2030; --panel: #262c3d; --panel-ink: #f2f3f6; --panel-muted: #a7aec0; --line: #3b4255; --ink: #f2f3f6; --muted: #a7aec0;
+    --chip: #262c3d; --sel-muted: #4a5166; --date-muted: #a7aec0;
+    --bar-full: #4a5268; --hover: rgba(255,255,255,.04); --hatch-ink: rgba(255,255,255,.14);
+    --t-baja: #a8262b; --t-media: #632a35; --t-alta: #394055; --t-muy-alta: #394055; --c-full: #a7aec0;
+  }
+  [data-theme="carbo"] {
+    --bg: #000; --panel: #161616; --panel-ink: #fff; --panel-muted: #9c9c9c; --line: #2f2f2f; --ink: #fff; --muted: #9c9c9c;
+    --top-bg: #db2828; --logo-bg: #000; --chip: #1c1c1c; --date-bg: #1c1c1c; --block-bg: #1c1c1c; --date-muted: #9c9c9c;
+    --bar-full: #3a3a3a; --hover: rgba(255,255,255,.05);
+    --t-baja: #a1191d; --t-media: #5c1a1c; --t-alta: #2c2c2c; --t-muy-alta: #2c2c2c; --c-full: #9c9c9c;
+  }
+  [data-theme="blanc"] {
+    --bg: #fff; --panel: #f2f2f2; --panel-ink: #000; --panel-muted: #696973; --line: #e2e2e5; --ink: #000; --muted: #696973;
+    --chip: #f2f2f2; --sel-bg: #000; --sel-ink: #fff; --sel-muted: #b8b8c0; --date-muted: #b8b8c0;
+    --bar-full: #cdcdd2; --today: #000; --hover: rgba(0,0,0,.03); --focus: #000; --hatch-ink: rgba(0,0,0,.2);
+    --t-muy-baja: #db2828; --t-baja: #e8696a; --t-media: #f3b4b4; --t-alta: #dedee2; --t-muy-alta: #dedee2;
+    --c-muy-baja: #c21f1f; --c-baja: #b23a3a; --c-media: #8f5555; --c-full: #696973;
+  }
+  [data-theme="panot"] {
+    --bg: #d5d5d1; --panel: #fff; --panel-ink: #151515; --panel-muted: #5e5e63; --line: #b9b9b4; --ink: #151515; --muted: #55555a;
+    --chip: #e6e6e3; --sel-bg: #000; --sel-ink: #fff; --sel-muted: #b8b8c0; --date-muted: #b8b8c0;
+    --bar-full: #a9a9a4; --today: #000; --hover: rgba(0,0,0,.04); --focus: #000; --hatch-ink: rgba(0,0,0,.22);
+    --t-muy-baja: #db2828; --t-baja: #e46163; --t-media: #eea7a7; --t-alta: #bdbdb8; --t-muy-alta: #bdbdb8;
+    --c-muy-baja: #b81c1c; --c-baja: #a53535; --c-media: #7d4c4c; --c-full: #55555a;
+  }
+  [data-theme="vermell"] {
+    --bg: #db2828; --panel: #fff; --panel-ink: #000; --panel-muted: #696973; --line: #ec7a7a; --ink: #fff; --muted: #fde0e0;
+    --top-bg: #000; --logo-bg: #fff; --logo-ink: #db2828; --chip: #b81f1f; --sel-tag-bg: #db2828; --sel-tag-ink: #fff;
+    --sel-bg: #000; --sel-ink: #fff; --sel-muted: #b8b8c0; --tag-bg: #000; --tag-ink: #fff; --best-bg: #000; --best-ink: #fff;
+    --bar-full: #a51d1d; --today: #000; --hover: rgba(0,0,0,.06); --focus: #000; --hatch-ink: rgba(0,0,0,.25);
+    --t-muy-baja: #fff; --t-baja: #f8c4c4; --t-media: #ee8b8b; --t-alta: #a51d1d; --t-muy-alta: #a51d1d;
+    --c-muy-baja: #fff; --c-baja: #ffe1e1; --c-media: #ffc2c2; --c-full: #fde0e0;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { transition: background-color .3s; }
+  body { margin: 0; color: var(--ink); font: 400 16px/1.5 "Schibsted Grotesk", system-ui, sans-serif; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+
+  .bar { background: var(--top-bg); color: var(--top-ink); }
+  .bar .wrap { display: flex; align-items: stretch; min-height: 52px; }
+  .logo { display: flex; align-items: stretch; font-weight: 900; font-size: 19px; }
+  .logo span { display: flex; align-items: center; padding: 0 14px; }
+  .logo span:first-child { background: var(--logo-bg); color: var(--logo-ink); }
+  .logo span:last-child { color: var(--top-ink); font-weight: 500; }
+  .lang { margin-left: 0; display: flex; align-items: center; gap: 2px; }
+  .lang button { background: none; border: 0; color: inherit; opacity: .75; padding: 6px 8px; cursor: pointer; }
+  .lang button[aria-pressed="true"] { background: var(--top-ink); color: var(--top-bg); font-weight: 700; opacity: 1; }
+
+  .intro { padding: 44px 0 26px; display: grid; grid-template-columns: 1fr auto; gap: 20px 48px; align-items: end; }
+  h1 { margin: 0; font-size: clamp(34px, 5.4vw, 64px); line-height: 1; font-weight: 800; letter-spacing: -.02em; max-width: 15ch; }
+  .intro p { margin: 0; color: var(--muted); max-width: 40ch; font-size: 17px; }
+  .going { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .going > span { font-weight: 700; margin-right: 6px; }
+  .going button { background: var(--chip); border: 0; padding: 9px 14px; cursor: pointer; font-weight: 500; }
+  .going button[aria-pressed="true"] { background: var(--sel-bg); color: var(--sel-ink); font-weight: 700; }
+
+  /* the year as one strip: every bar a day */
+  .strip { margin: 10px 0 0; }
+  .strip .bars { display: grid; grid-template-columns: repeat(365, minmax(0, 1fr)); height: 64px; gap: 1px; align-items: end; cursor: pointer; }
+  .strip .bars i { display: block; height: 100%; }
+  .strip .bars i.full { height: 38%; background: var(--bar-full); background-image: none; }
+  .strip .track { position: relative; padding-top: 12px; }
+  .strip .win { position: absolute; top: 0; height: 8px; border: 2px solid var(--ink); border-bottom: 0; pointer-events: none; }
+  .strip .bars i.today { background: var(--today) !important; height: 100%; }
+  .strip .mlabels { display: grid; grid-template-columns: repeat(365, minmax(0, 1fr)); font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .strip .mlabels span { grid-row: 1; white-space: nowrap; border-left: 1px solid var(--line); padding-left: 4px; }
+  .strip .cap { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; margin-bottom: 8px; gap: 12px; flex-wrap: wrap; }
+  .strip .cap b { color: var(--ink); }
+
+  .main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 44px; padding: 36px 0 60px; align-items: start; }
+  h2 { font-size: 15px; font-weight: 700; margin: 0 0 12px; color: var(--muted); }
+  .week { margin: 22px 0 6px; font-size: 13px; color: var(--muted); }
+  .week:first-of-type { margin-top: 0; }
+  .row { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 16px; width: 100%; padding: 8px 12px 8px 0; background: none; border: 0; border-top: 1px solid var(--line); cursor: pointer; text-align: left; }
+  .row:hover { background: var(--hover); }
+  .row[aria-pressed="true"] { background: var(--sel-bg); color: var(--sel-ink); border-top-color: var(--sel-bg); }
+  .row[aria-pressed="true"] .lvl { color: var(--sel-muted); }
+  .date { background: var(--date-bg); color: var(--date-ink); height: 64px; display: grid; place-content: center; text-align: center; line-height: 1; }
+  .date b { font-size: 26px; font-weight: 800; }
+  .date small { font-size: 12px; margin-top: 3px; color: var(--date-muted); }
+  .date.hol { box-shadow: inset 0 -4px 0 var(--red); }
+  .lvl { font-size: 14px; color: var(--muted); }
+  .lvl strong { display: block; color: inherit; font-size: 16px; font-weight: 600; }
+  .row[aria-pressed="true"] .lvl strong { color: var(--sel-ink); }
+  .row[aria-pressed="true"] .date { box-shadow: inset 0 0 0 2px var(--sel-ink); }
+  .meter { display: flex; gap: 3px; margin-top: 6px; }
+  .meter span { width: 22px; height: 6px; background: var(--line); }
+  .meter span.on { background: currentColor; }
+  .row .pr { display: flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 800; letter-spacing: -.01em; }
+  .tag { font-size: 14px; font-weight: 700; padding: 3px 7px; background: var(--tag-bg); color: var(--tag-ink); letter-spacing: 0; }
+  .row[aria-pressed="true"] .tag:not(.none) { background: var(--sel-tag-bg, var(--tag-bg)); color: var(--sel-tag-ink, var(--tag-ink)); }
+  .tag.none { background: none; color: var(--muted); font-weight: 500; padding: 3px 0; }
+  .more { margin-top: 14px; background: none; border: 2px solid var(--ink); padding: 10px 16px; font-weight: 700; cursor: pointer; }
+
+  .side { position: sticky; top: 16px; display: grid; gap: 28px; }
+  .best { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .best button { background: var(--best-bg); color: var(--best-ink); border: 0; padding: 14px 12px 12px; text-align: left; cursor: pointer; display: grid; gap: 2px; }
+  .best button b { font-size: 30px; font-weight: 800; line-height: 1; }
+  .best button span { font-size: 14px; }
+  .best button small { font-size: 13px; opacity: .85; }
+  .ticket { background: var(--panel); color: var(--panel-ink); padding: 22px 22px 20px; }
+  .ticket h3 { margin: 0 0 4px; font-size: 26px; font-weight: 800; line-height: 1.1; }
+  .ticket .lead { color: var(--panel-muted); margin: 0 0 14px; }
+  .ticket table { width: 100%; border-collapse: collapse; }
+  .ticket td { padding: 10px 0; border-top: 1px solid color-mix(in srgb, var(--panel-ink) 15%, transparent); vertical-align: top; }
+  .ticket td small { display: block; color: var(--panel-muted); font-size: 13px; }
+  .ticket td:last-child { text-align: right; font-size: 22px; font-weight: 800; white-space: nowrap; }
+  .ticket td:last-child s { display: block; font-size: 13px; font-weight: 400; color: var(--panel-muted); }
+  .resident { margin-top: 14px; border-left: 6px solid var(--red); background: var(--block-bg); color: var(--block-ink); padding: 12px 14px; font-size: 15px; }
+  .why { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .why li { border: 1px solid color-mix(in srgb, var(--panel-ink) 20%, transparent); padding: 3px 9px; font-size: 13px; color: var(--panel-muted); }
+
+  .t-muy-baja { background: var(--t-muy-baja); } .t-baja { background: var(--t-baja); } .t-media { background: var(--t-media); }
+  .t-alta { background: var(--t-alta); } .t-muy-alta { background: var(--t-muy-alta); background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--hatch-ink) 5px 7px); }
+  .c-muy-baja { color: var(--c-muy-baja); } .c-baja { color: var(--c-baja); } .c-media { color: var(--c-media); } .c-alta, .c-muy-alta { color: var(--c-full); }
+  .theme { display: flex; align-items: center; gap: 8px; margin-left: 18px; font-size: 14px; }
+  .theme select { font: inherit; background: var(--top-bg); color: var(--top-ink); border: 1px solid currentColor; padding: 5px 8px; }
+
+  .key { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .key span { display: flex; align-items: center; gap: 6px; }
+  .key i { width: 14px; height: 14px; display: block; }
+  footer { border-top: 1px solid var(--line); padding: 18px 0 40px; color: var(--muted); font-size: 13px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .strip .bars.grow i { animation: rise .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--d) * 2ms); transform-origin: bottom; }
+    @keyframes rise { from { transform: scaleY(0); } }
+  }
+  @media (max-width: 960px) { .main { grid-template-columns: 1fr; } .side { position: static; order: -1; } .intro { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) {
+    .logo span:last-child { display: none; } .theme span { display: none; }
+    .strip .bars { height: 44px; gap: 0; } .strip .mlabels span { font-size: 0; } .strip .mlabels span::first-letter { font-size: 12px; }
+    .row { grid-template-columns: 52px 1fr auto; gap: 12px; } .date { height: 54px; } .date b { font-size: 22px; }
+    .row .pr { font-size: 24px; flex-direction: column; align-items: flex-end; gap: 2px; } .meter span { width: 14px; }
+    .best button b { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="bar"><div class="wrap">
+  <div class="logo"><span>PRISA</span><span>Barcelona</span></div>
+  <label class="theme" style="margin-left:auto"><span>Tema</span><select id="theme"><optgroup label="Oscuros"><option value="grafit">Grafit</option><option value="nit">Nit</option><option value="carbo">Carbó</option></optgroup><optgroup label="Claros"><option value="blanc">Blanc</option><option value="panot">Panot</option><option value="vermell">Vermell</option></optgroup></select></label>
+  <div class="lang" role="group" aria-label="Idioma"><button aria-pressed="false">CA</button><button aria-pressed="true">ES</button><button aria-pressed="false">EN</button></div>
+</div></div>
+
+<div class="wrap">
+  <section class="intro">
+    <h1>El precio del transporte, día a día</h1>
+    <p>En los días tranquilos, el billete cuesta hasta un 30&nbsp;% menos. Si puedes elegir cuándo ir, elige un día con descuento.</p>
+    <div class="going" role="group" aria-label="Zona"><span>Voy a</span><span id="zones" style="display:contents"></span></div>
+  </section>
+
+  <section class="strip" aria-label="Todo 2027 de un vistazo">
+    <div class="cap"><span>Todo 2027: cuanto más alta la barra, más barato ese día. <b>Toca un día para saltar a él.</b></span>
+      <span class="key" id="key"></span></div>
+    <div class="track"><div class="win" id="win"></div><div class="bars grow" id="bars"></div></div>
+    <div class="mlabels" id="mlabels"></div>
+  </section>
+
+  <section class="main">
+    <div>
+      <h2 id="listhead">Próximas cuatro semanas</h2>
+      <div id="list"></div>
+      <button class="more" id="more">Ver cuatro semanas más</button>
+    </div>
+    <div class="side">
+      <div>
+        <h2>Los días más baratos de estas semanas</h2>
+        <div class="best" id="best"></div>
+      </div>
+      <div class="ticket" id="ticket" aria-live="polite"></div>
+    </div>
+  </section>
+  <footer>Datos ilustrativos para el diseño: los precios reales saldrán de la previsión de PRISA.</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const P = PRISA;
+const tIdx = P.todayIndex();
+const state = { zone: "city", start: tIdx, weeks: 4, sel: tIdx };
+const $ = (id) => document.getElementById(id);
+const LEVEL = { "muy-baja": "Muy tranquilo", baja: "Tranquilo", media: "Normal", alta: "Concurrido", "muy-alta": "Muy concurrido" };
+const metered = (k) => ({ "muy-baja": 1, baja: 2, media: 3, alta: 4, "muy-alta": 5 })[k];
+
+function renderStrip() {
+  const days = P.days(state.zone);
+  const end = state.start + state.weeks * 7;
+  $("bars").innerHTML = days.map((d) => {
+    const cls = [`t-${d.tier.key}`, d.discount ? "" : "full", d.i === tIdx ? "today" : ""].join(" ");
+    return `<i class="${cls}" style="--d:${d.i}" data-i="${d.i}" title="${P.longDate(d)}: ${P.eur(P.price(2.9, d.discount))}"></i>`;
+  }).join("");
+  $("win").style.left = (state.start / 365 * 100) + "%";
+  $("win").style.width = (Math.min(365, end) - state.start) / 365 * 100 + "%";
+  $("mlabels").innerHTML = P.MONTHS.map((m, k) => {
+    const first = days.find((d) => d.month === k).i;
+    return `<span style="grid-column:${first + 1} / span ${P.monthDays(state.zone, k).length}">${m.slice(0, 3)}</span>`;
+  }).join("");
+  $("key").innerHTML = P.TIERS.map((t) => `<span><i class="t-${t.key}"></i>${t.discount ? "−" + t.discount * 100 + " %" : LEVEL[t.key].toLowerCase()}</span>`).join("");
+}
+
+function row(d) {
+  const pr = P.price(2.9, d.discount);
+  const n = metered(d.tier.key);
+  return `<button class="row" data-i="${d.i}" aria-pressed="${d.i === state.sel}">
+    <span class="date ${d.holiday ? "hol" : ""}"><b>${d.day}</b><small>${P.WD_ABBR[d.wd]}</small></span>
+    <span class="lvl c-${d.tier.key}"><strong>${d.i === tIdx ? "Hoy · " : ""}${LEVEL[d.tier.key]}</strong>${d.holiday || d.event || ""}
+      <span class="meter" aria-hidden="true">${[1, 2, 3, 4, 5].map((k) => `<span class="${k <= n ? "on" : ""}"></span>`).join("")}</span></span>
+    <span class="pr">${P.eur(pr)}${d.discount ? `<span class="tag">−${d.discount * 100} %</span>` : `<span class="tag none">tarifa normal</span>`}</span>
+  </button>`;
+}
+
+function renderList() {
+  const days = P.days(state.zone);
+  const win = days.slice(state.start, state.start + state.weeks * 7);
+  let html = "", wk = null;
+  for (const d of win) {
+    const monday = d.i - d.wd;
+    if (monday !== wk) { wk = monday; const m = days[Math.max(0, monday)]; html += `<div class="week">Semana del ${m.day} de ${P.MONTHS[m.month]}</div>`; }
+    html += row(d);
+  }
+  $("list").innerHTML = html;
+  $("listhead").textContent = state.start === tIdx ? `Desde hoy, ${state.weeks} semanas` : `Desde el ${P.longDate(days[state.start])}`;
+  $("more").hidden = state.start + state.weeks * 7 >= 365;
+  const best = [...win].sort((a, b) => b.discount - a.discount || a.p - b.p).slice(0, 3).sort((a, b) => a.i - b.i);
+  $("best").innerHTML = best.map((d) => `<button data-i="${d.i}"><b>${P.eur(P.price(2.9, d.discount))}</b><span>${P.cap(P.WD_ABBR[d.wd])} ${d.day} ${P.MONTHS[d.month].slice(0, 3)}</span><small>${d.discount ? "−" + d.discount * 100 + " %" : "tarifa normal"}</small></button>`).join("");
+}
+
+function renderTicket() {
+  const d = P.days(state.zone)[state.sel];
+  const cap = P.residentCap(state.zone, d.month);
+  $("ticket").innerHTML = `
+    <h3>${P.cap(P.longDate(d))}</h3>
+    <p class="lead">${LEVEL[d.tier.key]}${d.discount ? `: todo cuesta un ${d.discount * 100} % menos.` : ": se paga la tarifa normal."}</p>
+    <table>${P.productPrices(d, state.zone).map((p) => `<tr><td>${p.name}<small>${p.capped ? "Con T-mobilitat de residente" : p.who}</small></td><td>${d.discount ? `<s>${P.eur(p.ref)}</s>` : ""}${P.eur(p.value)}</td></tr>`).join("")}</table>
+    <div class="resident">Si vives aquí, en ${P.MONTHS[d.month]} nunca pagas más de <b>${P.eur(cap)}</b> por viaje.</div>
+    <ul class="why" aria-label="Por qué este precio">${P.factors(d).map((f) => `<li>${f}</li>`).join("")}</ul>`;
+}
+
+function render() {
+  $("zones").innerHTML = P.ZONES.map((z) => `<button data-zone="${z.id}" aria-pressed="${z.id === state.zone}">${z.name}</button>`).join("");
+  renderStrip(); renderList(); renderTicket();
+}
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-i],[data-zone],#more");
+  if (!t) return;
+  $("bars").classList.remove("grow");
+  if (t.id === "more") { state.weeks += 4; render(); return; }
+  if (t.dataset.zone) { state.zone = t.dataset.zone; render(); return; }
+  const i = +t.dataset.i;
+  state.sel = i;
+  if (t.closest("#bars")) {  // jump the agenda to the week of that day
+    const d = P.days(state.zone)[i];
+    state.start = Math.max(0, i - d.wd); state.weeks = 4;
+    render();
+    document.querySelector(`.row[data-i="${i}"]`)?.scrollIntoView({ block: "center", behavior: "smooth" });
+    return;
+  }
+  document.querySelectorAll(".row").forEach((r) => r.setAttribute("aria-pressed", +r.dataset.i === i));
+  renderTicket();
+});
+const THEMES = ["grafit", "nit", "carbo", "blanc", "panot", "vermell"];
+function setTheme(t) {
+  if (!THEMES.includes(t)) t = "grafit";
+  document.documentElement.dataset.theme = t;
+  $("theme").value = t;
+  try { localStorage.setItem("prisa-theme", t); } catch (e) {}
+}
+let saved = new URLSearchParams(location.search).get("theme");
+if (!saved) { try { saved = localStorage.getItem("prisa-theme"); } catch (e) {} }
+setTheme(saved);
+$("theme").addEventListener("change", (e) => setTheme(e.target.value));
+render();
+</script>
+</body>
+</html>

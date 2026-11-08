@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRISA · Calendario de tarifas 2027 (original)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --navy: #14213d; --bg: #f4f3ef; --card: #fff; --line: #e6e3dc; --ink: #1d2230; --muted: #6b6f7a;
+    --empty: #ece9e2; --blue: #2b5797; --green: #1f6b45;
+    --t-muy-baja: #fbeedd; --t-baja: #f6d8a6; --t-media: #efb36d; --t-alta: #dc7a3e; --t-muy-alta: #a23a1c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 "IBM Plex Sans", system-ui, sans-serif; }
+  .mono { font-family: "IBM Plex Mono", monospace; }
+  header { background: var(--navy); color: #fff; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  header small { letter-spacing: .12em; font-size: 11px; opacity: .8; }
+  header h1 { margin: 2px 0 0; font-size: 22px; }
+  nav { display: flex; gap: 6px; align-items: center; }
+  nav button { background: none; border: 0; color: #fff; font: 500 14px "IBM Plex Sans"; padding: 9px 14px; border-radius: 8px; cursor: pointer; }
+  nav button[aria-selected="true"] { background: #fff; color: var(--navy); font-weight: 600; }
+  .pill-out { border: 1px solid rgba(255,255,255,.5); border-radius: 99px; padding: 5px 12px; font-size: 12px; margin-left: 8px; }
+  main { padding: 24px 32px 48px; }
+  .toolbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .arrow { width: 44px; height: 44px; border: 1px solid var(--line); background: #fff; border-radius: 8px; cursor: pointer; font-size: 18px; }
+  .period { font-size: 26px; font-weight: 600; min-width: 170px; text-align: center; }
+  .period small { display: block; font-size: 14px; font-weight: 400; color: var(--muted); }
+  .legend { margin-left: auto; display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .legend b { color: var(--ink); font-weight: 600; }
+  .sw { display: inline-block; width: 13px; height: 13px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+  select { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; min-width: 180px; }
+  .layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .dow { font-size: 11px; letter-spacing: .08em; color: var(--muted); padding: 0 4px; }
+  .cell { background: var(--card); border-radius: 8px; min-height: 92px; padding: 8px; border: 1.5px solid transparent; cursor: pointer; display: flex; flex-direction: column; text-align: left; font: inherit; color: inherit; }
+  .cell.empty { background: var(--empty); cursor: default; }
+  .cell[aria-pressed="true"] { border-color: var(--navy); }
+  .cell .top { display: flex; justify-content: space-between; font-weight: 600; }
+  .cell .fest { font-size: 9px; letter-spacing: .1em; color: var(--muted); font-weight: 500; }
+  .tag { display: inline-block; border-radius: 6px; padding: 1px 7px; font-size: 11px; font-weight: 600; margin-top: 4px; align-self: flex-start; }
+  .tag.big { font-size: 13px; padding: 5px 12px; border-radius: 99px; }
+  .tier-muy-baja { background: var(--t-muy-baja); } .tier-baja { background: var(--t-baja); } .tier-media { background: var(--t-media); }
+  .tier-alta { background: var(--t-alta); color: #fff; } .tier-muy-alta { background: var(--t-muy-alta); color: #fff; }
+  .cell .price { margin-top: auto; font-size: 15px; font-weight: 600; }
+  .cell .disc { color: var(--blue); font-size: 11px; margin-left: 6px; font-family: "IBM Plex Mono"; }
+  .cell .base { font-size: 11px; color: var(--muted); }
+  .note { font-size: 12px; color: var(--muted); margin: 8px 0 18px; }
+  .card { background: var(--card); border-radius: 10px; padding: 18px 20px; border: 1px solid var(--line); }
+  .card h3 { margin: 0 0 14px; font-size: 16px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+  .stat .k { font-size: 12px; color: var(--muted); }
+  .stat .v { font-size: 26px; font-weight: 600; font-family: "IBM Plex Mono"; }
+  .stat .v small { font-size: 13px; color: var(--muted); font-family: "IBM Plex Sans"; font-weight: 400; }
+  .stat .s { font-size: 11px; color: var(--muted); }
+  .ok { color: var(--green); font-family: "IBM Plex Sans" !important; }
+  .bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 2px; margin: 8px 0; }
+  .side h4 { font-size: 14px; margin: 18px 0 8px; }
+  .side .label { font-size: 11px; letter-spacing: .1em; color: var(--muted); }
+  .side h2 { font-size: 22px; margin: 6px 0 10px; }
+  .rows { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .rows td, .rows th { padding: 8px 0; border-bottom: 1px solid var(--line); text-align: right; }
+  .rows th { font-weight: 400; color: var(--muted); font-size: 11px; }
+  .rows td:first-child, .rows th:first-child { text-align: left; }
+  .rows td small { display: block; color: var(--muted); font-size: 11px; }
+  .meter { height: 8px; background: var(--empty); border-radius: 4px; margin: 3px 0 10px; }
+  .meter i { display: block; height: 100%; border-radius: 4px; }
+  .chips span { display: inline-block; background: var(--empty); border-radius: 6px; padding: 4px 8px; font-size: 12px; margin: 0 4px 6px 0; }
+  .sim { border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 12px; }
+  .sim div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0; }
+  .sim b { font-family: "IBM Plex Mono"; font-weight: 500; }
+  .months { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
+  .months.year { grid-template-columns: repeat(5, 1fr); }
+  .mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
+  .mini span { aspect-ratio: 1.4; border-radius: 4px; display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .year .mini { gap: 3px; } .year .mini span { aspect-ratio: 1.2; font-size: 9px; }
+  .mini .dl { font-size: 11px; color: var(--muted); aspect-ratio: auto; font-weight: 500; }
+  .mhead { display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; font-size: 16px; }
+  .mhead a { font-size: 13px; font-weight: 400; color: var(--blue); cursor: pointer; }
+  .mhead small { font-size: 11px; color: var(--muted); font-weight: 400; }
+  .mfoot { display: flex; justify-content: space-between; font-size: 12px; border-top: 1px solid var(--line); margin-top: 14px; padding-top: 10px; }
+  table.cmp { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.cmp th { text-align: right; font-weight: 400; font-size: 12px; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); }
+  table.cmp td { text-align: right; padding: 12px 8px; border-bottom: 1px solid var(--line); }
+  table.cmp th:nth-child(-n+2), table.cmp td:nth-child(-n+2) { text-align: left; }
+  table.cmp td:nth-child(2) { width: 34%; }
+  .stats.five { grid-template-columns: repeat(5, 1fr); }
+  .stats.five .card { padding: 16px 18px; }
+  [hidden] { display: none !important; }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; } .months, .months.year, .stats.five { grid-template-columns: repeat(2, 1fr); }
+    main, header { padding-left: 16px; padding-right: 16px; } .cell { min-height: 74px; padding: 5px; } .cell .tag { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div><small>PRISA · TARIFA DINÁMICA DE TRANSPORTE PÚBLICO</small><h1>Calendario de tarifas 2027</h1></div>
+  <nav role="tablist">
+    <button role="tab" data-view="month" aria-selected="true">Calendario mensual</button>
+    <button role="tab" data-view="quarter" aria-selected="false">Resumen trimestral</button>
+    <button role="tab" data-view="year" aria-selected="false">Resumen anual</button>
+    <span class="pill-out">Datos ilustrativos</span>
+  </nav>
+</header>
+<main>
+  <section id="v-month"></section>
+  <section id="v-quarter" hidden></section>
+  <section id="v-year" hidden></section>
+</main>
+<script src="data.js"></script>
+<script>
+const P = PRISA;
+const state = { view: "month", month: 4, quarter: 1, zone: "city", sel: P.todayIndex() };
+const legend = () => `<div class="legend"><b>Congestión prevista · descuento</b>${P.TIERS.map(t =>
+  `<span><i class="sw tier-${t.key}"></i>${t.name} · ${t.discount ? "−" + t.discount * 100 + " %" : "base"}</span>`).join("")}</div>`;
+const stackBar = (s) => `<div class="bar">${s.byTier.filter(b => b.n).map(b => `<i class="tier-${b.tier.key}" style="flex:${b.n}"></i>`).join("")}</div>`;
+
+function renderMonth() {
+  const list = P.monthDays(state.zone, state.month);
+  if (P.days(state.zone)[state.sel].month !== state.month) state.sel = list[0].i;
+  const sel = P.days(state.zone)[state.sel];
+  const s = P.summary(list);
+  const lead = list[0].wd;
+  let cells = P.WEEKDAYS.map(w => `<div class="dow">${w.slice(0, 3).toUpperCase()}</div>`).join("");
+  for (let k = 0; k < lead; k++) cells += `<div class="cell empty"></div>`;
+  for (const d of list) {
+    const pr = P.price(2.9, d.discount);
+    cells += `<button class="cell" aria-pressed="${d.i === sel.i}" data-i="${d.i}">
+      <span class="top"><span>${d.day}</span>${d.holiday ? '<span class="fest">FESTIVO</span>' : ""}</span>
+      <span class="tag tier-${d.tier.key}">${d.tier.name}</span>
+      <span class="price mono">${P.eur(pr)}${d.discount ? `<span class="disc">−${d.discount * 100} %</span>` : ""}</span>
+      ${d.discount ? "" : '<span class="base">Tarifa base</span>'}</button>`;
+  }
+  const trail = (7 - (lead + list.length) % 7) % 7;
+  for (let k = 0; k < trail; k++) cells += `<div class="cell empty"></div>`;
+  const prices = P.productPrices(sel, state.zone);
+  const cap = P.residentCap(state.zone, state.month);
+  document.getElementById("v-month").innerHTML = `
+    <div class="toolbar">
+      <button class="arrow" data-step="-1" aria-label="Mes anterior">‹</button>
+      <div class="period">${P.cap(P.MONTHS[state.month])} 2027</div>
+      <button class="arrow" data-step="1" aria-label="Mes siguiente">›</button>
+      <label style="margin-left:24px;color:var(--muted)">Zona <select id="zone">${P.ZONES.map(z => `<option value="${z.id}" ${z.id === state.zone ? "selected" : ""}>${z.name}</option>`).join("")}</select></label>
+      ${legend()}
+    </div>
+    <div class="layout">
+      <div>
+        <div class="grid">${cells}</div>
+        <p class="note">Precio mostrado en cada día: billete sencillo (referencia 2,90 €). Pulsa un día para ver todos los títulos.</p>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between"><h3>Resumen de ${P.MONTHS[state.month]}</h3><a style="color:var(--blue);cursor:pointer" data-goto="quarter">Ver resumen trimestral</a></div>
+          <div class="stats">
+            <div class="stat"><div class="k">Días con descuento</div><div class="v">${s.discounted} <small>de ${s.n}</small></div></div>
+            <div class="stat"><div class="k">Descuento medio</div><div class="v">${P.pct(s.meanDiscount, 1)}</div></div>
+            <div class="stat"><div class="k">Precio medio sencillo</div><div class="v">${P.eur(s.meanSingle)}</div></div>
+            <div class="stat"><div class="k">Garantía residentes</div><div class="v ok">Cumplida</div><div class="s">Ningún día por encima de ${P.eur(cap)}</div></div>
+          </div>
+          <div class="k" style="font-size:12px;color:var(--muted);margin-top:16px">Días por nivel de congestión</div>
+          ${stackBar(s)}
+          <div style="font-size:12px">${s.byTier.filter(b => b.n).map(b => `<span style="margin-right:12px"><i class="sw tier-${b.tier.key}"></i>${b.tier.name} : <b>${b.n}</b></span>`).join("")}</div>
+        </div>
+      </div>
+      <aside class="card side">
+        <div class="label">DÍA SELECCIONADO</div>
+        <h2>${P.cap(P.longDate(sel))}</h2>
+        <span class="tag big tier-${sel.tier.key}">Congestión ${sel.tier.name.toLowerCase()}</span>
+        <p style="margin:10px 0 4px">Índice de presión medio <b class="mono">${sel.p.toFixed(2).replace(".", ",")}</b></p>
+        <p style="color:var(--blue);margin:0">${sel.discount ? `Descuento aplicado: −${sel.discount * 100} % sobre la tarifa de referencia` : "Tarifa de referencia: sin descuento"}</p>
+        <h4>Precio por título</h4>
+        <table class="rows"><tr><th>Título</th><th>Referencia</th><th>Este día</th></tr>
+          ${prices.map(p => `<tr><td><b>${p.name}</b><small>${p.capped ? "Tope: media del mes " + P.eur(cap) : p.who}</small></td><td class="mono" style="color:var(--muted)">${P.eur(p.ref)}</td><td class="mono"><b>${P.eur(p.value)}</b></td></tr>`).join("")}
+        </table>
+        <h4>Presión turística por barrio</h4>
+        ${P.hotspots(sel).filter(h => h.id !== "barceloneta" || true).slice(0, 4).map(h => `<div style="display:flex;justify-content:space-between;font-size:13px"><span>${h.name}</span><b class="mono">${h.p.toFixed(2).replace(".", ",")}</b></div><div class="meter"><i class="tier-${P.tierOf(h.p).key}" style="width:${h.p * 100}%"></i></div>`).join("")}
+        <h4>Factores de la previsión</h4>
+        <div class="chips">${P.factors(sel).map(f => `<span>${f}</span>`).join("")}<span>Cruceros: [dato]</span><span>Eventos: [dato]</span></div>
+        <h4>Escenario simulado</h4>
+        <div class="sim"><div><span>Visitantes desplazados a este día</span><b>[resultado del modelo]</b></div><div><span>Reducción en días de presión alta</span><b>[resultado del modelo]</b></div><div><span>Escenario de elasticidad</span><b>[supuesto A / B / C]</b></div></div>
+      </aside>
+    </div>`;
+}
+
+function miniMonth(m, year) {
+  const list = P.monthDays(state.zone, m);
+  const s = P.summary(list);
+  let cells = P.WD_SHORT.map(w => `<span class="dl">${w}</span>`).join("");
+  for (let k = 0; k < list[0].wd; k++) cells += "<span></span>";
+  cells += list.map(d => `<span class="tier-${d.tier.key}">${d.day}</span>`).join("");
+  return `<div class="card">
+    <div class="mhead"><span>${P.cap(P.MONTHS[m])}</span>${year ? `<small>${s.discounted} días con desc.</small>` : `<a data-open="${m}">Abrir mes</a>`}</div>
+    <div class="mini">${cells}</div>
+    ${year ? "" : `<div class="mfoot"><span>Con descuento <b>${s.discounted}</b></span><span>Desc. medio <b>${P.pct(s.meanDiscount, 1)}</b></span><span>Sencillo <b>${P.eur(s.meanSingle)}</b></span></div>`}
+  </div>`;
+}
+function statCards(cards) {
+  return `<div class="stats five">${cards.map(([k, v, s, cls]) => `<div class="card stat"><div class="k">${k}</div><div class="v ${cls || ""}">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`).join("")}</div>`;
+}
+const QNAMES = ["1.er trimestre", "2.º trimestre", "3.er trimestre", "4.º trimestre"];
+function renderQuarter() {
+  const ms = [0, 1, 2].map(k => state.quarter * 3 + k);
+  const list = ms.flatMap(m => P.monthDays(state.zone, m));
+  const s = P.summary(list);
+  document.getElementById("v-quarter").innerHTML = `
+    <div class="toolbar"><button class="arrow" data-qstep="-1" aria-label="Trimestre anterior">‹</button>
+      <div class="period">${QNAMES[state.quarter]} 2027<small>${P.cap(P.MONTHS[ms[0]])} – ${P.MONTHS[ms[2]]}</small></div>
+      <button class="arrow" data-qstep="1" aria-label="Trimestre siguiente">›</button>${legend()}</div>
+    ${statCards([["Días con descuento", `${s.discounted} <small>de ${s.n}</small>`], ["Descuento medio", P.pct(s.meanDiscount, 1)],
+      ["Precio medio sencillo", P.eur(s.meanSingle), "Referencia 2,90 €"], ["Precio medio T-casual / viaje", P.eur(s.meanCasual), "Referencia 1,30 €"],
+      ["Garantía residentes", "Cumplida", `${s.n} de ${s.n} días`, "ok"]])}
+    <div class="months">${ms.map(m => miniMonth(m)).join("")}</div>
+    <div class="card"><h3>Comparativa por mes</h3><table class="cmp"><tr><th>Mes</th><th>Días por nivel de congestión</th><th>Días con descuento</th><th>Sencillo medio</th><th>T-casual medio</th><th>T-Dia medio</th></tr>
+    ${ms.map(m => { const x = P.summary(P.monthDays(state.zone, m)); return `<tr><td><b>${P.cap(P.MONTHS[m])}</b></td><td>${stackBar(x)}</td><td>${x.discounted} / ${x.n}</td><td class="mono">${P.eur(x.meanSingle)}</td><td class="mono">${P.eur(x.meanCasual)}</td><td class="mono">${P.eur(x.meanDia)}</td></tr>`; }).join("")}</table></div>`;
+}
+function renderYear() {
+  const all = P.days(state.zone);
+  const s = P.summary(all);
+  document.getElementById("v-year").innerHTML = `
+    <div class="toolbar"><button class="arrow" disabled>‹</button><div class="period">2027</div><button class="arrow" disabled>›</button>${legend()}</div>
+    ${statCards([["Días con descuento", `${s.discounted} <small>de 365</small>`], ["Descuento medio anual", P.pct(s.meanDiscount, 1)],
+      ["Precio medio sencillo", P.eur(s.meanSingle), "Referencia 2,90 €"], ["Días a tarifa de referencia", s.atReference, "Congestión alta o muy alta"],
+      ["Garantía residentes", "Cumplida", "12 de 12 meses", "ok"]])}
+    <div class="months year">${[...Array(12).keys()].map(m => miniMonth(m, true)).join("")}</div>
+    <div class="card"><div style="display:flex;justify-content:space-between"><h3>Por trimestre</h3><a style="color:var(--blue);cursor:pointer" data-goto="quarter">Ver detalle trimestral</a></div><table class="cmp"><tr><th>Trimestre</th><th>Días por nivel de congestión</th><th>Días con descuento</th><th>Descuento medio</th><th>Sencillo medio</th></tr>
+    ${[0, 1, 2, 3].map(q => { const x = P.summary(all.filter(d => Math.floor(d.month / 3) === q)); return `<tr><td><b>${QNAMES[q]}</b></td><td>${stackBar(x)}</td><td>${x.discounted} / ${x.n}</td><td>${P.pct(x.meanDiscount, 1)}</td><td class="mono">${P.eur(x.meanSingle)}</td></tr>`; }).join("")}</table></div>`;
+}
+function render() {
+  for (const v of ["month", "quarter", "year"]) document.getElementById("v-" + v).hidden = v !== state.view;
+  document.querySelectorAll("nav button").forEach(b => b.setAttribute("aria-selected", b.dataset.view === state.view));
+  ({ month: renderMonth, quarter: renderQuarter, year: renderYear })[state.view]();
+}
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-view],[data-i],[data-step],[data-qstep],[data-open],[data-goto]");
+  if (!t) return;
+  if (t.dataset.view) state.view = t.dataset.view;
+  if (t.dataset.i) state.sel = +t.dataset.i;
+  if (t.dataset.step) state.month = Math.min(11, Math.max(0, state.month + +t.dataset.step));
+  if (t.dataset.qstep) state.quarter = Math.min(3, Math.max(0, state.quarter + +t.dataset.qstep));
+  if (t.dataset.open) { state.month = +t.dataset.open; state.view = "month"; }
+  if (t.dataset.goto) { state.view = t.dataset.goto; state.quarter = Math.floor(state.month / 3); }
+  render();
+});
+document.addEventListener("change", (e) => { if (e.target.id === "zone") { state.zone = e.target.value; render(); } });
+render();
+</script>
+</body>
+</html>

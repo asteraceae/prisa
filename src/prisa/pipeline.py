@@ -6,7 +6,8 @@
 
 Steps: features (barri_day, city_day) -> saturation (transit_load) ->
 pressure (components, index) -> forecast (2027) -> pricing (calendars) ->
-simulate (scenarios) -> figures. Each step reads the previous step's tables
+simulate (scenarios) -> figures -> export (the web app's
+data, frontend/data/calendar.js). Each step reads the previous step's tables
 from data/processed/, so any step can also be run alone with
 `uv run python -m prisa.<step>`.
 """
@@ -20,7 +21,7 @@ import time
 from pathlib import Path
 
 EXTERNAL = ("geography", "calendar", "transit", "ridership", "mitma")
-STEPS = ("features", "saturation", "pressure", "forecast", "pricing", "simulate", "figures")
+STEPS = ("features", "saturation", "pressure", "forecast", "pricing", "simulate", "figures", "export")
 
 
 def _run(module: str, argv: list[str] | None = None) -> None:
@@ -48,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
         for name in EXTERNAL:
             _run(f"prisa.external.{name}", [])
     for step in STEPS:
-        _run(f"prisa.{step}")
+        _run(f"prisa.{step}", [] if step == "export" else None)
     return 0
 
 

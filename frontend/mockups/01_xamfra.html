@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRISA · Xamfrà</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap">
+<style>
+  :root {
+    --bg: #222226; --surface: #2c2c31; --raise: #36363d; --line: #45454e; --ink: #f3f3f1; --muted: #a4a4ae;
+    --red: #db2828; --red-deep: #9b1c1c; --black: #000; --white: #fff;
+    --t-muy-baja: #ffffff; --t-baja: #c9c9d1; --t-media: #6d6d78; --t-alta: #9b1c1c; --t-muy-alta: #db2828;
+    --chamfer: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
+    --gap: clamp(5px, 1vw, 12px);
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; color: var(--ink); font: 400 16px/1.5 "Archivo", system-ui, sans-serif; font-stretch: 100%; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--white); outline-offset: 3px; }
+
+  /* top bar: Ajuntament-style black strip with a red block */
+  .bar { background: var(--black); display: flex; align-items: stretch; min-height: 56px; }
+  .brand { background: var(--red); color: var(--white); display: flex; align-items: center; padding: 0 20px; font-weight: 800; font-stretch: 75%; font-size: 24px; letter-spacing: .01em; }
+  .bar .what { display: flex; align-items: center; padding: 0 18px; color: var(--muted); font-size: 14px; }
+  .bar .right { margin-left: auto; display: flex; align-items: center; gap: 4px; padding-right: 12px; }
+  .seg button { background: none; border: 0; padding: 8px 14px; cursor: pointer; color: var(--muted); font-weight: 600; }
+  .seg button[aria-pressed="true"] { background: var(--white); color: var(--black); }
+  .lang { display: flex; gap: 2px; margin-left: 14px; }
+  .lang button { background: none; border: 0; color: var(--muted); padding: 6px 7px; cursor: pointer; font-size: 13px; }
+  .lang button[aria-pressed="true"] { color: var(--white); box-shadow: inset 0 -2px 0 var(--red); }
+
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+
+  /* today */
+  .today { display: grid; grid-template-columns: auto 1fr; gap: 8px 40px; align-items: end; padding: 40px 0 36px; border-bottom: 1px solid var(--line); }
+  .today .when { grid-column: 1 / -1; font-size: 18px; color: var(--muted); }
+  .today .when b { color: var(--ink); font-weight: 600; }
+  .price-xl { font-weight: 800; font-stretch: 62%; font-size: clamp(88px, 14vw, 176px); line-height: .82; letter-spacing: -.01em; font-variant-numeric: tabular-nums; display: flex; align-items: flex-start; gap: 14px; }
+  .price-xl .cut { font-size: .26em; background: var(--red); color: var(--white); padding: .18em .3em .12em; line-height: 1; font-stretch: 75%; margin-top: .25em; }
+  .today .facts { max-width: 46ch; padding-bottom: 6px; }
+  .today .facts p { margin: 0 0 10px; }
+  .today .best { border-left: 4px solid var(--white); padding-left: 12px; color: var(--muted); }
+  .today .best b { color: var(--ink); }
+
+  /* calendar + detail */
+  .main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; padding: 32px 0 56px; align-items: start; }
+  .cal-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .cal-head h2 { margin: 0; font-size: 32px; font-weight: 700; font-stretch: 80%; min-width: 7.5ch; }
+  .step { width: 40px; height: 40px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 20px; }
+  .step:disabled { opacity: .35; cursor: default; }
+  .zones { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+  .zones button { border: 1px solid var(--line); background: none; padding: 7px 12px; cursor: pointer; font-size: 14px; color: var(--muted); }
+  .zones button[aria-pressed="true"] { background: var(--white); color: var(--black); border-color: var(--white); font-weight: 600; }
+
+  .dows, .grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--gap); }
+  .dows { margin-bottom: 8px; color: var(--muted); font-size: 13px; text-align: center; }
+  .cell { aspect-ratio: 1; padding: 3px; clip-path: var(--chamfer); background: transparent; border: 0; cursor: pointer; position: relative; }
+  .cell[aria-pressed="true"] { background: var(--red); }
+  .cell.empty { cursor: default; }
+  .face { position: absolute; inset: 3px; clip-path: var(--chamfer); display: grid; grid-template-rows: auto 1fr auto; padding: 14% 16%; text-align: left; transition: background-color .35s, color .35s; }
+  .cell.empty .face { background: var(--surface); }
+  .face .n { font-weight: 700; font-size: clamp(13px, 1.6vw, 19px); line-height: 1; }
+  .face .n small { font-weight: 500; font-size: 11px; margin-left: 4px; opacity: .75; }
+  .face .pr { align-self: end; font-weight: 700; font-stretch: 70%; font-size: clamp(13px, 1.9vw, 24px); line-height: 1; font-variant-numeric: tabular-nums; }
+  .face .pc { font-size: 12px; font-weight: 600; opacity: .8; }
+  .cell[aria-pressed="true"] .face { inset: 4px; }
+  .is-today .n::after { content: "hoy"; font-size: 11px; font-weight: 600; margin-left: 5px; background: var(--black); color: var(--white); padding: 1px 4px; vertical-align: 2px; }
+  .muy-baja { background: var(--t-muy-baja); color: #1f1f23; } .baja { background: var(--t-baja); color: #1f1f23; }
+  .media { background: var(--t-media); color: var(--white); } .alta { background: var(--t-alta); color: var(--white); } .muy-alta { background: var(--t-muy-alta); color: var(--white); }
+
+  .scale { display: flex; gap: 6px; margin-top: 22px; flex-wrap: wrap; }
+  .scale div { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-right: 10px; }
+  .scale i { width: 20px; height: 20px; clip-path: var(--chamfer); display: block; }
+  .scale b { color: var(--ink); font-weight: 600; }
+
+  /* the Cerdà build: blocks appear in a diagonal sweep, once, on load */
+  @media (prefers-reduced-motion: no-preference) {
+    .build .cell { animation: lay .5s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--k) * 28ms); }
+    @keyframes lay { from { opacity: 0; transform: scale(.6); } }
+  }
+
+  aside { background: var(--surface); padding: 26px 24px 22px; position: sticky; top: 16px; }
+  aside h3 { margin: 0; font-size: 26px; font-weight: 700; font-stretch: 85%; line-height: 1.1; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; margin: 10px 0 2px; font-size: 14px; }
+  .chip i { width: 16px; height: 16px; clip-path: var(--chamfer); }
+  aside h4 { font-size: 13px; font-weight: 600; color: var(--muted); margin: 24px 0 8px; }
+  .titles { list-style: none; margin: 0; padding: 0; }
+  .titles li { display: grid; grid-template-columns: 1fr auto; padding: 9px 0; border-top: 1px solid var(--line); gap: 2px 12px; }
+  .titles .nm { font-weight: 600; }
+  .titles .who { font-size: 13px; color: var(--muted); grid-column: 1; }
+  .titles .v { grid-row: 1 / span 2; grid-column: 2; text-align: right; font-weight: 700; font-stretch: 70%; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .titles .v s { display: block; font-size: 13px; font-weight: 400; font-stretch: 100%; color: var(--muted); }
+  .promise { background: var(--white); color: #1f1f23; padding: 12px 14px; margin-top: 14px; font-size: 14px; }
+  .promise b { font-weight: 700; }
+  .spots div { display: grid; grid-template-columns: 1fr auto; font-size: 14px; margin-bottom: 8px; }
+  .spots .m { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; margin-top: 4px; }
+  .spots .m span { height: 6px; background: var(--raise); }
+  .why { margin: 0; padding: 0; list-style: none; font-size: 14px; }
+  .why li { padding: 4px 0 4px 14px; position: relative; }
+  .why li::before { content: ""; position: absolute; left: 0; top: 12px; width: 6px; height: 6px; background: var(--red); }
+
+  /* year view: twelve small grids, like the Eixample from above */
+  .year-stats { display: flex; gap: 48px; flex-wrap: wrap; margin: 4px 0 28px; }
+  .year-stats div { font-size: 14px; color: var(--muted); }
+  .year-stats b { display: block; color: var(--ink); font-size: 44px; font-weight: 800; font-stretch: 65%; line-height: 1; }
+  .months { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px 28px; }
+  .month { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-start; align-self: start; width: 100%; }
+  .month .grid { display: grid; }
+  .month h4 { margin: 0 0 8px; display: flex; justify-content: space-between; font-size: 17px; font-weight: 700; }
+  .month h4 small { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .month .grid { gap: 3px; }
+  .month .face { inset: 0; padding: 0; }
+  .month .cell { padding: 0; }
+  .month:hover h4 { text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 3px; }
+
+  footer { border-top: 1px solid var(--line); padding: 18px 0 40px; color: var(--muted); font-size: 13px; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 1060px) { .main { grid-template-columns: 1fr; } aside { position: static; } .months { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 640px) {
+    .bar .what { display: none; } .lang { display: none; } .brand { font-size: 20px; padding: 0 14px; }
+    .today { grid-template-columns: 1fr; padding-top: 24px; } .zones { margin-left: 0; }
+    .face { padding: 16% 14%; } .face .pr { display: none; } .face .n small { display: none; }
+    .is-today .n::after { content: none; }
+    .is-today .n { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 3px; }
+    .months { grid-template-columns: repeat(2, 1fr); gap: 22px 16px; }
+    .cal-head h2 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="brand">PRISA</div>
+  <div class="what">Tarifa del día en el transporte público de Barcelona</div>
+  <div class="right">
+    <div class="seg" role="group" aria-label="Vista">
+      <button data-view="month" aria-pressed="true">Mes</button><button data-view="year" aria-pressed="false">Año</button>
+    </div>
+    <div class="lang" role="group" aria-label="Idioma"><button aria-pressed="false">CA</button><button aria-pressed="true">ES</button><button aria-pressed="false">EN</button></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="today" id="today" aria-live="polite"></section>
+  <section class="main" id="v-month">
+    <div>
+      <div class="cal-head">
+        <button class="step" data-step="-1" aria-label="Mes anterior">‹</button>
+        <h2 id="mname"></h2>
+        <button class="step" data-step="1" aria-label="Mes siguiente">›</button>
+        <div class="zones" role="group" aria-label="Zona" id="zones"></div>
+      </div>
+      <div class="dows" aria-hidden="true"></div>
+      <div class="grid build" id="grid"></div>
+      <div class="scale" id="scale"></div>
+    </div>
+    <aside id="detail" aria-live="polite"></aside>
+  </section>
+  <section id="v-year" hidden style="padding:32px 0 56px"></section>
+  <footer>Datos ilustrativos para el diseño: los precios reales saldrán de la previsión de PRISA. El billete sencillo se muestra en cada día; abre un día para ver todos los títulos.</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const P = PRISA;
+const state = { view: "month", month: 4, zone: "city", sel: P.todayIndex() };
+const tIdx = P.todayIndex();
+const $ = (id) => document.getElementById(id);
+const short = (x) => x.toFixed(2).replace(".", ",");
+
+function bestThisWeek(days, from) {
+  const week = days.slice(from + 1, from + 8);
+  return week.reduce((b, d) => (d.discount > b.discount || (d.discount === b.discount && d.p < b.p) ? d : b), week[0]);
+}
+
+function renderToday() {
+  const days = P.days(state.zone);
+  const d = days[tIdx];
+  const pr = P.price(2.9, d.discount);
+  const best = bestThisWeek(days, tIdx);
+  const zone = P.ZONES.find((z) => z.id === state.zone).name;
+  $("today").innerHTML = `
+    <div class="when">Hoy, <b>${P.longDate(d)}</b>${state.zone === "city" ? "" : ` · ${zone}`}</div>
+    <div class="price-xl" aria-label="Billete sencillo hoy: ${P.eur(pr)}">${short(pr)}<span>€</span>${d.discount ? `<span class="cut">−${d.discount * 100}%</span>` : ""}</div>
+    <div class="facts">
+      <p>Billete sencillo. ${d.discount ? `La tarifa normal es 2,90 €: hoy se espera congestión ${d.tier.name.toLowerCase()}, así que viajar sale más barato.` : `Hoy se espera congestión ${d.tier.name.toLowerCase()}: se paga la tarifa normal.`}</p>
+      <p class="best">Si puedes elegir otro día esta semana: <b>${P.longDate(best)}, ${P.eur(P.price(2.9, best.discount))}</b>.</p>
+    </div>`;
+}
+
+function face(d, extra = "") {
+  const pr = P.price(2.9, d.discount);
+  return `<span class="face ${d.tier.key}"><span class="n">${d.day}${d.holiday ? "<small>festivo</small>" : ""}</span><span class="pc">${d.discount ? "−" + d.discount * 100 + "%" : ""}</span><span class="pr">${short(pr)} €</span>${extra}</span>`;
+}
+
+function renderMonth() {
+  const days = P.days(state.zone);
+  const list = P.monthDays(state.zone, state.month);
+  if (days[state.sel].month !== state.month) state.sel = list[0].i;
+  $("mname").textContent = `${P.cap(P.MONTHS[state.month])} 2027`;
+  document.querySelector("[data-step='-1']").disabled = state.month === 0;
+  document.querySelector("[data-step='1']").disabled = state.month === 11;
+  document.querySelector(".dows").innerHTML = P.WD_ABBR.map((w) => `<span>${w}</span>`).join("");
+  let html = "", k = 0;
+  const lead = list[0].wd, total = Math.ceil((lead + list.length) / 7) * 7;
+  for (let c = 0; c < total; c++) {
+    const d = list[c - lead];
+    const row = Math.floor(c / 7), col = c % 7;
+    const kk = row + col;  // diagonal sweep order
+    if (!d) { html += `<span class="cell empty" style="--k:${kk}" aria-hidden="true"><span class="face"></span></span>`; continue; }
+    const pr = P.price(2.9, d.discount);
+    html += `<button class="cell ${d.i === tIdx ? "is-today" : ""}" style="--k:${kk}" data-i="${d.i}" aria-pressed="${d.i === state.sel}"
+      aria-label="${P.longDate(d)}: ${P.eur(pr)}, congestión ${d.tier.name.toLowerCase()}${d.holiday ? ", festivo" : ""}">${face(d)}</button>`;
+  }
+  $("grid").innerHTML = html;
+  $("zones").innerHTML = P.ZONES.map((z) => `<button data-zone="${z.id}" aria-pressed="${z.id === state.zone}">${z.name}</button>`).join("");
+  $("scale").innerHTML = P.TIERS.map((t) => `<div><i class="${t.key}"></i><span><b>${t.discount ? "−" + t.discount * 100 + "%" : "Normal"}</b> ${t.name.toLowerCase()}</span></div>`).join("");
+  renderDetail();
+}
+
+function renderDetail() {
+  const d = P.days(state.zone)[state.sel];
+  const prices = P.productPrices(d, state.zone);
+  const cap = P.residentCap(state.zone, d.month);
+  $("detail").innerHTML = `
+    <h3>${P.cap(P.longDate(d))}</h3>
+    <div class="chip"><i class="${d.tier.key}"></i>Congestión ${d.tier.name.toLowerCase()}${d.discount ? `, ${d.discount * 100} % más barato` : ", tarifa normal"}</div>
+    <h4>Precio por título</h4>
+    <ul class="titles">${prices.map((p) => `<li><span class="nm">${p.name}</span><span class="v">${d.discount ? `<s>${P.eur(p.ref)}</s>` : ""}${P.eur(p.value)}</span><span class="who">${p.capped ? "Con T-mobilitat de residente" : p.who}</span></li>`).join("")}</ul>
+    <div class="promise">Si vives en Barcelona, <b>nunca pagas más de ${P.eur(cap)}</b> por viaje en ${P.MONTHS[d.month]}.</div>
+    <h4>Dónde habrá más gente</h4>
+    <div class="spots">${P.hotspots(d).sort((a, b) => b.p - a.p).map((h) => {
+      const n = Math.round(h.p * 10);
+      return `<div><span>${h.name}</span><span>${P.tierOf(h.p).name}</span><span class="m" aria-hidden="true">${[...Array(10)].map((_, j) => `<span ${j < n ? `style="background:var(--t-${P.tierOf(h.p).key})"` : ""}></span>`).join("")}</span></div>`;
+    }).join("")}</div>
+    <h4>Por qué este precio</h4>
+    <ul class="why">${P.factors(d).map((f) => `<li>${f}</li>`).join("")}</ul>`;
+}
+
+function renderYear() {
+  const all = P.days(state.zone);
+  const s = P.summary(all);
+  const months = [...Array(12).keys()].map((m) => {
+    const list = P.monthDays(state.zone, m);
+    const ms = P.summary(list);
+    let cells = "";
+    for (let k = 0; k < list[0].wd; k++) cells += `<span class="cell empty" aria-hidden="true"><span class="face"></span></span>`;
+    cells += list.map((d) => `<span class="cell" aria-hidden="true"><span class="face ${d.tier.key}"></span></span>`).join("");
+    return `<button class="month" data-open="${m}" aria-label="Abrir ${P.MONTHS[m]}: ${ms.discounted} días con descuento">
+      <h4>${P.cap(P.MONTHS[m])}<small>${ms.discounted} días más baratos</small></h4><span class="grid">${cells}</span></button>`;
+  }).join("");
+  $("v-year").innerHTML = `
+    <div class="cal-head"><h2>2027</h2><div class="zones" role="group" aria-label="Zona">${P.ZONES.map((z) => `<button data-zone="${z.id}" aria-pressed="${z.id === state.zone}">${z.name}</button>`).join("")}</div></div>
+    <div class="year-stats">
+      <div><b>${s.discounted}</b>días con descuento</div>
+      <div><b>${P.pct(s.meanDiscount, 1)}</b>descuento medio</div>
+      <div><b>${P.eur(s.meanSingle)}</b>billete sencillo de media</div>
+    </div>
+    <div class="months">${months}</div>
+    <div class="scale">${P.TIERS.map((t) => `<div><i class="${t.key}"></i><span><b>${t.discount ? "−" + t.discount * 100 + "%" : "Normal"}</b> ${t.name.toLowerCase()}</span></div>`).join("")}</div>`;
+}
+
+function render() {
+  $("v-month").hidden = state.view !== "month";
+  $("v-year").hidden = state.view !== "year";
+  document.querySelectorAll("[data-view]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.view === state.view));
+  renderToday();
+  state.view === "month" ? renderMonth() : renderYear();
+}
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-view],[data-i],[data-step],[data-zone],[data-open]");
+  if (!t) return;
+  $("grid").classList.remove("build");
+  if (t.dataset.view) state.view = t.dataset.view;
+  if (t.dataset.i) { state.sel = +t.dataset.i; document.querySelectorAll(".grid .cell[data-i]").forEach((c) => c.setAttribute("aria-pressed", c === t)); renderDetail(); return; }
+  if (t.dataset.step) state.month = Math.min(11, Math.max(0, state.month + +t.dataset.step));
+  if (t.dataset.zone) state.zone = t.dataset.zone;
+  if (t.dataset.open) { state.month = +t.dataset.open; state.view = "month"; }
+  render();
+});
+render();
+</script>
+</body>
+</html>

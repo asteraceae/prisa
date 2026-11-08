@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRISA · Tarifa del día en Barcelona</title>
+<meta name="description" content="El precio del transporte público de Barcelona, día a día: más barato en los días tranquilos.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath fill='%23db2828' d='M2 0h6l2 2v6l-2 2H2L0 8V2z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap">
+<link rel="stylesheet" href="app.css">
+<script>
+  // apply the saved theme before first paint, so there is no flash
+  try { const t = localStorage.getItem("prisa-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <a class="brand" href="#">PRISA</a>
+  <div class="what">Tarifa del día en el transporte público de Barcelona</div>
+  <div class="right">
+    <div class="seg" role="group" aria-label="Vista">
+      <button data-view="month" aria-pressed="true">Mes</button><button data-view="year" aria-pressed="false">Año</button>
+    </div>
+    <button class="theme-btn" id="theme" type="button"></button>
+  </div>
+</div></header>
+<div class="notice" id="notice" hidden><div class="wrap">Datos de ejemplo: estos precios no son la previsión real.</div></div>
+
+<main class="wrap">
+  <section class="today" id="today" aria-live="polite"></section>
+
+  <section class="main" id="v-month">
+    <div>
+      <div class="cal-head">
+        <button class="step" data-step="-1" aria-label="Mes anterior">‹</button>
+        <h2 id="mname"></h2>
+        <button class="step" data-step="1" aria-label="Mes siguiente">›</button>
+        <span class="hint">Precio del billete sencillo. Usa las flechas para moverte por los días.</span>
+      </div>
+      <div class="dows" aria-hidden="true"></div>
+      <div class="grid build" id="grid" aria-labelledby="mname"></div>
+      <div class="scale" id="scale"></div>
+    </div>
+    <aside id="detail" aria-live="polite"></aside>
+  </section>
+
+  <section id="v-year" hidden style="padding:32px 0 56px"></section>
+
+  <section class="how" aria-label="Cómo funciona">
+    <div><h3>Un precio por día</h3><p>Cada día tiene un único precio para toda la ciudad y para todos. Se publica con antelación, como el tiempo.</p></div>
+    <div><h3>Más barato si hay menos gente</h3><p>Cuando se espera poca congestión, los billetes de pago por viaje bajan hasta un 30 %. Paga el precio del día en que validas.</p></div>
+    <div><h3>Tu abono no cambia</h3><p>La T-usual y la T-jove cuestan lo mismo todos los días. Nadie paga nunca más que la tarifa publicada.</p></div>
+  </section>
+  <footer id="foot"></footer>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
